@@ -11,8 +11,8 @@ public class Utils {
     static {
         directionConverterMap.put(0, 0d);
         directionConverterMap.put(1, Math.PI);
-        directionConverterMap.put(2, Math.PI / 2); //버그 있는 것으로 추정
-        directionConverterMap.put(3, Math.PI * (3/2)); //버그 있는 것으로 추정
+        directionConverterMap.put(2, Math.PI * (3.0/2.0));  //버그 수정
+        directionConverterMap.put(3, Math.PI / 2.0);        //버그 수정
     }
 
     //두 점 사이의 거리를 구하는 함수
@@ -56,6 +56,7 @@ public class Utils {
 
     //무작위 불리언(true/false)을 생성하는 함수
     public static boolean randomBool() {
-        return (randomInt(1) == 1); //버그 있는 것으로 추정
+        Random r = new Random();
+        return r.nextBoolean(); //버그 수정
     }
 }

@@ -72,17 +72,7 @@ public class HouseMode extends GhostState{
 
         if (new_xSpd == 0 && new_ySpd == 0) return;
 
-        if (java.lang.Math.abs(new_xSpd) != java.lang.Math.abs(new_ySpd)) {
-            ghost.setxSpd(new_xSpd);
-            ghost.setySpd(new_ySpd);
-        } else {
-            if (ghost.getxSpd() != 0) {
-                ghost.setxSpd(0);
-                ghost.setxSpd(new_ySpd);
-            }else{
-                ghost.setxSpd(new_xSpd);
-                ghost.setySpd(0);
-            }
-        }
+        ghost.setxSpd(new_xSpd);
+        ghost.setySpd(new_ySpd);
     }
 }

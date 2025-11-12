@@ -12,7 +12,7 @@ public class KeyHandler implements KeyListener {
 
     public static List<Key> keys = new ArrayList<>();
 
-    public class Key {
+    public static class Key { //static으로 바꿈
         public boolean isPressed;
 
         public Key() {

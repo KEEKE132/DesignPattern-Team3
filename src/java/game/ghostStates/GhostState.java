@@ -86,17 +86,7 @@ public abstract class GhostState {
         if (new_xSpd == 0 && new_ySpd == 0) return;
 
         //모든 경우를 테스트한 후, 유령의 방향을 변경합니다 (대각선으로 갈 수 없도록 확인).
-        if (Math.abs(new_xSpd) != Math.abs(new_ySpd)) {
-            ghost.setxSpd(new_xSpd);
-            ghost.setySpd(new_ySpd);
-        } else {
-            if (new_xSpd != 0) {
-                ghost.setxSpd(0);
-                ghost.setxSpd(new_ySpd);
-            }else{
-                ghost.setxSpd(new_xSpd);
-                ghost.setySpd(0);
-            }
-        }
+        ghost.setxSpd(new_xSpd);
+        ghost.setySpd(new_ySpd);
     }
 }
