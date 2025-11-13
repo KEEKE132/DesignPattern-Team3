@@ -28,6 +28,8 @@ public class Game implements Observer {
 
     private static boolean firstInput = false;
 
+    private int totalGumsOnMap = 0; //맵의 총 팩껌 개수
+
     public Game(LevelConfig levelConfig){
         //게임 초기화
         //레벨(맵)의 CSV 파일 로드
@@ -83,8 +85,10 @@ public class Game implements Observer {
                     }
                 }else if (dataChar.equals(".")) { //팩껌(PacGum) 생성
                     objects.add(new PacGum(xx * cellSize, yy * cellSize));
+                    totalGumsOnMap++;
                 }else if (dataChar.equals("o")) { //슈퍼팩껌(SuperPacGum) 생성
                     objects.add(new SuperPacGum(xx * cellSize, yy * cellSize));
+                    totalGumsOnMap++;
                 }else if (dataChar.equals("-")) { //유령의 집 벽 생성
                     objects.add(new GhostHouse(xx * cellSize, yy * cellSize));
                 }
@@ -138,13 +142,26 @@ public class Game implements Observer {
     @Override
     public void updatePacGumEaten(PacGum pg) {
         pg.destroy(); //팩껌은 팩맨이 먹었을 때 파괴됩니다.
+        totalGumsOnMap--;
+        checkLevelClear();
     }
 
     @Override
     public void updateSuperPacGumEaten(SuperPacGum spg) {
         spg.destroy(); //슈퍼팩껌은 팩맨이 먹었을 때 파괴됩니다.
+        totalGumsOnMap--;
         for (Ghost gh : ghosts) {
             gh.getState().superPacGumEaten(); //슈퍼팩껌이 먹혔을 때 특별한 전환(transition)이 존재한다면, 유령의 상태가 바뀝니다.
+        }
+        checkLevelClear();
+    }
+
+    //팩껌을 다 먹었는지 확인하고 게임 종료
+    private void checkLevelClear() {
+        if (totalGumsOnMap == 0) {
+            System.out.println("YOU WIN!");
+            System.out.println("Score : " + GameLauncher.getUIPanel().getScore());
+            System.exit(0);
         }
     }
 
