@@ -3,6 +3,7 @@ package game;
 import game.entities.*;
 import game.entities.ghosts.Blinky;
 import game.entities.ghosts.Ghost;
+import game.gameconfig.LevelConfig;
 import game.ghostFactory.*;
 import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
@@ -27,14 +28,13 @@ public class Game implements Observer {
 
     private static boolean firstInput = false;
 
-    public Game(){
+    public Game(LevelConfig levelConfig){
         //게임 초기화
-
         //레벨(맵)의 CSV 파일 로드
         List<List<String>> data = null;
         try {
-            //CsvReader를 사용해 level.csv 파일을 읽어 2차원 리스트(data)로 가져옵니다.
-            data = new CsvReader().parseCsv(getClass().getClassLoader().getResource("level/level.csv").toURI());
+            //CsvReader를 사용해 레벨 csv 파일을 읽어 2차원 리스트(data)로 가져옵니다.
+            data = new CsvReader().parseCsv(getClass().getClassLoader().getResource(levelConfig.getLevelMap()).toURI()); // <-- 변경
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -52,7 +52,8 @@ public class Game implements Observer {
                 if (dataChar.equals("x")) { //벽 생성
                     objects.add(new Wall(xx * cellSize, yy * cellSize));
                 }else if (dataChar.equals("P")) { //팩맨 생성
-                    pacman = new Pacman(xx * cellSize, yy * cellSize);
+                    // Pacman 생성 시 levelConfig 주입
+                    pacman = new Pacman(xx * cellSize, yy * cellSize, levelConfig); // <-- 변경됨
                     pacman.setCollisionDetector(collisionDetector);
 
                     //팩맨의 여러 옵저버(구독자)들 등록
@@ -74,7 +75,8 @@ public class Game implements Observer {
                             break;
                     }
 
-                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize);
+                    // Ghost 생성 시 levelConfig 주입
+                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, levelConfig); // <-- 변경됨
                     ghosts.add(ghost);
                     if (dataChar.equals("b")) {
                         blinky = (Blinky) ghost; //Inky 클래스의 setStrategy(...)에서 사용됨

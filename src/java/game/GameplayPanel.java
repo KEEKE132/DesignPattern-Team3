@@ -1,5 +1,6 @@
 package game;
 
+import game.gameconfig.LevelConfig;
 import game.utils.KeyHandler;
 
 import javax.imageio.ImageIO;
@@ -22,10 +23,13 @@ public class GameplayPanel extends JPanel implements Runnable {
     private KeyHandler key;
 
     private Game game;
+    private LevelConfig levelConfig; // <-- 추가
 
-    public GameplayPanel(int width, int height) throws IOException {
+    // 생성자가 LevelConfig를 주입받도록 변경
+    public GameplayPanel(int width, int height, LevelConfig levelConfig) throws IOException {
         this.width = width;
         this.height = height;
+        this.levelConfig = levelConfig; // <-- 추가
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
         requestFocus();
@@ -50,7 +54,7 @@ public class GameplayPanel extends JPanel implements Runnable {
 
         //루프 시작 전 init()을 호출하여 KeyHandler와 Game 객체를 딱 한 번 생성
         key = new KeyHandler(this);
-        game = new Game();
+        game = new Game(levelConfig); // <-- 변경
     }
 
     //게임 업데이트

@@ -4,6 +4,7 @@ import game.Game;
 import game.Observer;
 import game.Sujet;
 import game.entities.ghosts.Ghost;
+import game.gameconfig.LevelConfig;
 import game.utils.CollisionDetector;
 import game.utils.KeyHandler;
 import game.utils.WallCollisionDetector;
@@ -16,8 +17,9 @@ public class Pacman extends MovingEntity implements Sujet {
     private CollisionDetector collisionDetector;//충돌감지기
     private List<Observer> observerCollection; //UIPanel와 Game를 구독자로 관리
 
-    public Pacman(int xPos, int yPos) {
-        super(32, xPos, yPos, 2, "pacman.png", 4, 0.3f);
+    // 생성자가 LevelConfig를 주입받도록 변경
+    public Pacman(int xPos, int yPos, LevelConfig levelConfig) { // <-- 변경됨
+        super(32, xPos, yPos, levelConfig.getPacmanSpeed(), "pacman.png", 4, 0.3f); // <-- 변경됨
         observerCollection = new ArrayList<>(); //팩맨의 "구독자" 목록을 초기화
     }
 

@@ -3,6 +3,7 @@ package game;
 import game.entities.PacGum;
 import game.entities.SuperPacGum;
 import game.entities.ghosts.Ghost;
+import game.gameconfig.LevelConfig;
 import game.ghostStates.FrightenedMode;
 
 import javax.swing.*;
@@ -12,13 +13,16 @@ import java.awt.*;
 public class UIPanel extends JPanel implements Observer {
     public static int width;
     public static int height;
+    private LevelConfig levelConfig; // <-- 추가
 
     private int score = 0;
     private JLabel scoreLabel;
 
-    public UIPanel(int width, int height) {
+    // 생성자가 LevelConfig를 주입받도록 변경
+    public UIPanel(int width, int height, LevelConfig levelConfig) {
         this.width = width;
         this.height = height;
+        this.levelConfig = levelConfig; // <-- 추가
         setPreferredSize(new Dimension(width, height)); //자신의 크기를 설정
         this.setBackground(Color.black);
         scoreLabel = new JLabel("Score: " + score);
@@ -42,20 +46,20 @@ public class UIPanel extends JPanel implements Observer {
     //팩맨이 팩껌을 먹었다는 알림을 받으면 호출 -> 10점 추가
     @Override
     public void updatePacGumEaten(PacGum pg) {
-        updateScore(10);
+        updateScore(levelConfig.getScorePacGum()); // 10 -> config 값으로 변경
     }
 
     //팩맨이 유령과 충돌했다는 알림을 받으면 호출 -> 100점 추가
     @Override
     public void updateSuperPacGumEaten(SuperPacGum spg) {
-        updateScore(100);
+        updateScore(levelConfig.getScoreSuperPacGum()); // 100 -> config 값으로 변경
     }
 
     //팩맨이 팩껌을 먹었다는 알림을 받으면 호출 -> frightened이면, 500점 추가
     @Override
     public void updateGhostCollision(Ghost gh) {
         if (gh.getState() instanceof FrightenedMode) { //팩맨이 유령과 접촉한 경우, 유령이 "frightened(겁먹은)" 모드일 때만 점수를 업데이트합니다.
-            updateScore(500);
+            updateScore(levelConfig.getScoreGhostEaten()); // 500 -> config 값으로 변경
         }
     }
 }
