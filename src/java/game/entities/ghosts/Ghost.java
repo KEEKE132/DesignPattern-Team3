@@ -33,6 +33,11 @@ public abstract class Ghost extends MovingEntity {
 
     private final LevelConfig levelConfig; // <-- 추가
 
+    // 대사 관련 필드
+    private String currentDialogue = null; // 현재 표시할 대사
+    private int dialogueTimer = 0; // 대사 표시 시간 타이머
+    private int dialogueDuration = 0; // 대사가 표시될 총 프레임 수
+
     // 생성자가 LevelConfig를 주입받도록 변경
     public Ghost(int xPos, int yPos, String spriteName, LevelConfig levelConfig) {
         super(32, xPos, yPos, levelConfig.getGhostSpeed(), spriteName, 2, 0.1f);
@@ -99,6 +104,15 @@ public abstract class Ghost extends MovingEntity {
     public void update() {
         if (!Game.getFirstInput()) return; //플레이어가 움직이기 전까지 유령은 움직이지 않습니다.
 
+        // 대사 타이머 업데이트
+        if (currentDialogue != null) {
+            dialogueTimer++;
+            if (dialogueTimer >= dialogueDuration) {
+                currentDialogue = null; // 대사 제거
+                dialogueTimer = 0;
+            }
+        }
+
         //만약 유령이 '겁먹은' 상태라면, 설정된 시간(levelConfig)만큼 타이머가 시작되며,
         //시간이 다 되면 적절한 전환을 적용하기 위해 해당 상태(state)에 알림을 보내, 유령을 원래 상태로 되돌립니다.
         if (state == frightenedMode) {
@@ -156,5 +170,88 @@ public abstract class Ghost extends MovingEntity {
             g.drawImage(sprite.getSubimage((int)subimage * size + direction * size * nbSubimagesPerCycle, 0, size, size), this.xPos, this.yPos,null);
         }
 
+        // 대사 렌더링
+        if (currentDialogue != null) {
+            renderDialogue(g);
+        }
+
     }
+
+    /**
+     * 유령 위에 대사를 렌더링합니다.
+     * @param g Graphics2D 객체
+     */
+    private void renderDialogue(Graphics2D g) {
+        // 폰트 설정
+        Font font = new Font("맑은 고딕", Font.BOLD, 12);
+        g.setFont(font);
+
+        // 텍스트 크기 측정
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(currentDialogue);
+        int textHeight = fm.getHeight();
+
+        // 대사 위치 계산 (유령 위쪽)
+        int dialogueX = xPos + (size - textWidth) / 2;
+        int dialogueY = yPos - 10;
+
+        // 배경 박스 그리기
+        int padding = 4;
+        g.setColor(new Color(0, 0, 0, 180)); // 반투명 검은색
+        g.fillRoundRect(dialogueX - padding, dialogueY - textHeight + 2,
+                       textWidth + padding * 2, textHeight, 5, 5);
+
+        // 테두리 그리기
+        g.setColor(Color.WHITE);
+        g.drawRoundRect(dialogueX - padding, dialogueY - textHeight + 2,
+                       textWidth + padding * 2, textHeight, 5, 5);
+
+        // 텍스트 그리기
+        g.setColor(Color.WHITE);
+        g.drawString(currentDialogue, dialogueX, dialogueY);
+    }
+
+    /**
+     * 유령에게 대사를 설정합니다.
+     * @param dialogue 표시할 대사
+     * @param durationFrames 대사가 표시될 프레임 수 (60프레임 = 약 1초)
+     */
+    public void setDialogue(String dialogue, int durationFrames) {
+        this.currentDialogue = dialogue;
+        this.dialogueTimer = 0;
+        this.dialogueDuration = durationFrames;
+    }
+
+    /**
+     * 유령에게 대사를 설정합니다. (기본 3초 표시)
+     * @param dialogue 표시할 대사
+     */
+    public void setDialogue(String dialogue) {
+        setDialogue(dialogue, 180); // 기본 180프레임 (약 3초)
+    }
+
+    /**
+     * 현재 표시 중인 대사를 제거합니다.
+     */
+    public void clearDialogue() {
+        this.currentDialogue = null;
+        this.dialogueTimer = 0;
+    }
+
+    /**
+     * 현재 대사가 표시 중인지 확인합니다.
+     * @return 대사가 표시 중이면 true, 아니면 false
+     */
+    public boolean hasDialogue() {
+        return currentDialogue != null;
+    }
+
+    /**
+     * 현재 표시 중인 대사를 반환합니다.
+     * @return 현재 대사 문자열 (없으면 null)
+     */
+    public String getCurrentDialogue() {
+        return currentDialogue;
+    }
+
 }

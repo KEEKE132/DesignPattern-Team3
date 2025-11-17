@@ -82,6 +82,7 @@ public class Game implements Observer {
                     ghosts.add(ghost);
                     if (dataChar.equals("b")) {
                         blinky = (Blinky) ghost; //Inky 클래스의 setStrategy(...)에서 사용됨
+                        ghost.setDialogue("I`m Blinky");
                     }
                 }else if (dataChar.equals(".")) { //팩껌(PacGum) 생성
                     objects.add(new PacGum(xx * cellSize, yy * cellSize));
