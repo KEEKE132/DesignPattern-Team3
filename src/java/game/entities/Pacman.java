@@ -50,7 +50,7 @@ public class Pacman extends MovingEntity implements Sujet {
 
         if (new_xSpd == 0 && new_ySpd == 0) return;
 
-        if (!Game.getFirstInput()) Game.setFirstInput(true);
+        // if (!Game.getFirstInput()) Game.setFirstInput(true); // firstInput는 PlayingState에서 관리
 
         //만약 유저가 상/하와 좌/우를 동시에 눌러도 대각선으로 가지 않도록, 한 번에 한 방향(수평 또는 수직)으로만 움직이게 보정하는 로직
         if (Math.abs(new_xSpd) != Math.abs(new_ySpd)) {
