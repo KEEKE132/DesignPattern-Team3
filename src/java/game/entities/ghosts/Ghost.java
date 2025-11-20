@@ -2,6 +2,7 @@ package game.entities.ghosts;
 
 import game.Game;
 import game.entities.MovingEntity;
+import game.ghostVisitor.GhostVisitor;
 import game.gameconfig.LevelConfig;
 import game.ghostStates.*;
 import game.ghostStrategies.IGhostStrategy;
@@ -252,6 +253,14 @@ public abstract class Ghost extends MovingEntity {
      */
     public String getCurrentDialogue() {
         return currentDialogue;
+    }
+
+    /**
+     * 
+     * @param visitor Visitor 클래스
+     */
+    public void accept(GhostVisitor visitor) {
+        visitor.visit(this);
     }
 
 }

@@ -7,6 +7,8 @@ import game.gameconfig.LevelConfig;
 import game.ghostFactory.*;
 import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
+import game.ghostVisitor.GhostVisitor;
+import game.ghostVisitor.StartLineVisitor;
 import game.utils.CollisionDetector;
 import game.utils.CsvReader;
 import game.utils.KeyHandler;
@@ -80,10 +82,6 @@ public class Game implements Observer {
                     // Ghost 생성 시 levelConfig 주입
                     Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, levelConfig); // <-- 변경됨
                     ghosts.add(ghost);
-                    if (dataChar.equals("b")) {
-                        blinky = (Blinky) ghost; //Inky 클래스의 setStrategy(...)에서 사용됨
-                        ghost.setDialogue("I`m Blinky");
-                    }
                 }else if (dataChar.equals(".")) { //팩껌(PacGum) 생성
                     objects.add(new PacGum(xx * cellSize, yy * cellSize));
                     totalGumsOnMap++;
@@ -102,6 +100,11 @@ public class Game implements Observer {
             if (o instanceof Wall) {
                 walls.add((Wall) o);
             }
+        }
+
+        GhostVisitor startLineVisitor = new StartLineVisitor();
+        for(Ghost g : ghosts) {
+            g.accept(startLineVisitor);
         }
     }
 
