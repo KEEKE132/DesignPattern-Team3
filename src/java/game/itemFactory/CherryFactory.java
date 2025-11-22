@@ -1,6 +1,6 @@
 package game.itemFactory;
 
-import game.entities.items.Cherry;
+import game.entities.items.scoreItems.Cherry;
 import game.entities.items.Item;
 
 public class CherryFactory extends AbstractItemFactory {

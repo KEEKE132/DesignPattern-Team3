@@ -1,5 +1,6 @@
 package game.entities.items;
 
+import game.Game;
 import game.entities.StaticEntity;
 
 import javax.imageio.ImageIO;
@@ -9,12 +10,10 @@ import java.io.IOException;
 
 public abstract class Item extends StaticEntity {
 
-    protected final int scoreValue;
     protected BufferedImage itemImage;
 
-    public Item(int xPos, int yPos, int score, String imagePath) {
+    public Item(int xPos, int yPos, String imagePath) {
         super(16, xPos, yPos);
-        this.scoreValue = score;
 
         try {
             this.itemImage = ImageIO.read(getClass().getClassLoader().getResource(imagePath));
@@ -23,22 +22,18 @@ public abstract class Item extends StaticEntity {
         }
     }
 
-    public int getScoreValue() {
-        return scoreValue;
+    // 아이템을 먹은 경우 행동 방식 구현 메서드
+    public abstract void onEaten(Game game);
+
+    // 클리어에 필요한 아이템인지 판단하기 위한 메서드
+    public boolean isRequiredToClear() {
+        return false;
     }
 
     @Override
     public void render(Graphics2D g) {
         if (itemImage != null) {
             int size = 16; // 그릴 이미지 크기
-
-            /* * [2. 렌더링 위치 보정]
-             * - 현재 xPos는 4px짜리 점(팩껌)의 시작점입니다.
-             * - 팩껌의 중심: xPos + 2
-             * - 이미지(32px)의 중심: (그릴 위치) + 16
-             * - (그릴 위치) + 16 = xPos + 2 가 되어야 하므로,
-             * - (그릴 위치) = xPos - 14 가 됩니다.
-             */
             g.drawImage(itemImage, xPos, yPos, size, size, null);
         }
     }

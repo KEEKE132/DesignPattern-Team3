@@ -41,7 +41,7 @@ public class Game implements Observer {
     private int totalGumsOnMap = 0;
 
     // 맵의 아이템 개수
-    private int totalItemsOnMap = 0;
+    private int totalRequiredItemsOnMap = 0;
 
     private boolean isGameOver = false;
     private boolean isLevelCleared = false;
@@ -122,9 +122,12 @@ public class Game implements Observer {
                         };
 
                         Item item = abstractItemFactory.createItem(xx * cellSize, yy * cellSize);
-
                         items.add(item);
-                        totalItemsOnMap++;
+
+                        // 클리어에 필요한 아이템인 경우에만 totalRequiredItemsOnMap 더함
+                        if(item.isRequiredToClear()) {
+                            totalRequiredItemsOnMap++;
+                        }
                     }
                     case "." -> {
                         objects.add(new PacGum(xx * cellSize, yy * cellSize));
@@ -207,11 +210,13 @@ public class Game implements Observer {
     @Override
     public void updateItemEaten(Item item) {
         item.destroy();
+        item.onEaten(this);
 
-        totalItemsOnMap--;
-        levelManager.addScore(item.getScoreValue());
-
-        checkLevelClear();
+        // 스테이지 클리어에 필요한 아이템인 경우에만 로직 작동
+        if (item.isRequiredToClear()) {
+            totalRequiredItemsOnMap--;
+            checkLevelClear();
+        }
     }
 
     @Override
@@ -228,10 +233,10 @@ public class Game implements Observer {
     }
 
     /**
-     * 팩껌과 아이템을 모두 먹은 경우 레벨 클리어 상태로 변경합니다.
+     * 팩껌과 필요한 아이템을 모두 먹은 경우 레벨 클리어 상태로 변경합니다.
      */
     private void checkLevelClear() {
-        if (totalGumsOnMap == 0 && totalItemsOnMap == 0) {
+        if (totalGumsOnMap == 0 && totalRequiredItemsOnMap == 0) {
             isLevelCleared = true;
         }
     }
@@ -253,5 +258,9 @@ public class Game implements Observer {
 
     public static boolean getFirstInput() {
         return firstInput;
+    }
+
+    public LevelManager getLevelManager() {
+        return this.levelManager;
     }
 }

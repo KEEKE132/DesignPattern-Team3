@@ -1,7 +1,7 @@
 package game.itemFactory;
 
 import game.entities.items.Item;
-import game.entities.items.Orange;
+import game.entities.items.scoreItems.Orange;
 
 public class OrangeFactory extends AbstractItemFactory {
     @Override
