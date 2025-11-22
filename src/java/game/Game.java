@@ -8,6 +8,8 @@ import game.gameconfig.LevelManager;
 import game.ghostFactory.*;
 import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
+import game.ghostVisitor.GhostVisitor;
+import game.ghostVisitor.StartLineVisitor;
 import game.utils.CollisionDetector;
 import game.utils.CsvReader;
 import game.utils.KeyHandler;
@@ -121,6 +123,11 @@ public class Game implements Observer {
             if (o instanceof Wall) {
                 walls.add((Wall) o);
             }
+        }
+
+        GhostVisitor startLineVisitor = new StartLineVisitor();
+        for(Ghost g : ghosts) {
+            g.accept(startLineVisitor);
         }
     }
 
