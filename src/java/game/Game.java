@@ -4,6 +4,7 @@ import game.entities.*;
 import game.entities.ghosts.Blinky;
 import game.entities.ghosts.Ghost;
 import game.gameconfig.LevelConfig;
+import game.gameconfig.LevelManager;
 import game.ghostFactory.*;
 import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
@@ -21,18 +22,28 @@ import java.util.List;
 //게임 그 자체를 관리하는 클래스
 public class Game implements Observer {
     //창(window)에 존재하는 여러 엔티티들의 목록을 만들기 위함
-    private List<Entity> objects = new ArrayList(); //생성된 모든 객체를 저장
-    private List<Ghost> ghosts = new ArrayList(); //유령만 저장
-    private static List<Wall> walls = new ArrayList(); //벽만 저장
+    private final List<Entity> objects = new ArrayList<>(); //생성된 모든 객체를 저장
+    private final List<Ghost> ghosts = new ArrayList<>(); //유령만 저장
+    private static final List<Wall> walls = new ArrayList<>(); //벽만 저장
 
     private static Pacman pacman;
     private static Blinky blinky;
 
     private static boolean firstInput = false;
 
-    private int totalGumsOnMap = 0; //맵의 총 팩껌 개수
+    // 맵의 총 팩껌 개수 (레벨 클리어 확인용)
+    private int totalGumsOnMap = 0;
 
-    public Game(LevelConfig levelConfig){
+    private boolean isGameOver = false;
+    private boolean isLevelCleared = false;
+
+    private final LevelManager levelManager;
+
+    //생성자: LevelManager를 받음
+    public Game(LevelManager levelManager){
+        this.levelManager = levelManager;
+        LevelConfig levelConfig = levelManager.getCurrentLevelConfig(); // 현재 레벨 설정을 가져옴
+
         //게임 초기화
         //레벨(맵)의 CSV 파일 로드
         List<List<String>> data = null;
@@ -53,43 +64,55 @@ public class Game implements Observer {
         for(int xx = 0 ; xx < cellsPerRow ; xx++) { //맵의 모든 칸(xx, yy)을 순회
             for(int yy = 0 ; yy < cellsPerColumn ; yy++) {
                 String dataChar = data.get(yy).get(xx);
-                if (dataChar.equals("x")) { //벽 생성
-                    objects.add(new Wall(xx * cellSize, yy * cellSize));
-                }else if (dataChar.equals("P")) { //팩맨 생성
-                    // Pacman 생성 시 levelConfig 주입
-                    pacman = new Pacman(xx * cellSize, yy * cellSize, levelConfig); // <-- 변경됨
-                    pacman.setCollisionDetector(collisionDetector);
+                switch (dataChar) {
+                    case "x" ->  //벽 생성
+                            objects.add(new Wall(xx * cellSize, yy * cellSize));
+                    case "P" -> {
+                        pacman = new Pacman(xx * cellSize, yy * cellSize, levelConfig); // Pacman 생성 시 levelConfig 주입
 
-                    //팩맨의 여러 옵저버(구독자)들 등록
-                    pacman.registerObserver(GameLauncher.getUIPanel()); //UIPanel를 팩맨의 첫 번째 구독자로 등록
-                    pacman.registerObserver(this); //Game 클래스 자신을 팩맨의 두 번째 구독자로 등록
-                }else if (dataChar.equals("b") || dataChar.equals("p") || dataChar.equals("i") || dataChar.equals("c")) { //여러 팩토리(Factory)들을 사용하여 유령 생성
-                    switch (dataChar) {
-                        case "b":
-                            abstractGhostFactory = new BlinkyFactory();
-                            break;
-                        case "p":
-                            abstractGhostFactory = new PinkyFactory();
-                            break;
-                        case "i":
-                            abstractGhostFactory = new InkyFactory();
-                            break;
-                        case "c":
-                            abstractGhostFactory = new ClydeFactory();
-                            break;
+                        pacman.setCollisionDetector(collisionDetector);
+
+                        // 팩맨의 여러 옵저버(구독자)들 등록
+                        // 등록 순서 수정 (중요!)
+                        /*
+                         * 1. Game(로직)을 '먼저' 등록함
+                         * 그래야 팩껌을 먹었을 때 점수가 먼저 증가함
+                         */
+                        pacman.registerObserver(this); // Game 클래스 자신을 팩맨의 첫 번째 구독자로 등록
+
+                        /*
+                         * 2. UIPanel(화면)을 '나중에' 등록함
+                         * 증가된 최신 점수를 읽어서 화면에 표시함
+                         */
+                        pacman.registerObserver(GameLauncher.getUIPanel()); // UIPanel를 팩맨의 두 번째 구독자로 등록
                     }
+                    case "b", "p", "i", "c" -> {
+                        abstractGhostFactory = switch (dataChar) {
+                            case "b" -> new BlinkyFactory();
+                            case "p" -> new PinkyFactory();
+                            case "i" -> new InkyFactory();
+                            case "c" -> new ClydeFactory();
+                            default -> abstractGhostFactory;
+                        };
 
-                    // Ghost 생성 시 levelConfig 주입
-                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, levelConfig); // <-- 변경됨
-                    ghosts.add(ghost);
-                }else if (dataChar.equals(".")) { //팩껌(PacGum) 생성
-                    objects.add(new PacGum(xx * cellSize, yy * cellSize));
-                    totalGumsOnMap++;
-                }else if (dataChar.equals("o")) { //슈퍼팩껌(SuperPacGum) 생성
-                    objects.add(new SuperPacGum(xx * cellSize, yy * cellSize));
-                    totalGumsOnMap++;
-                }else if (dataChar.equals("-")) { //유령의 집 벽 생성
-                    objects.add(new GhostHouse(xx * cellSize, yy * cellSize));
+                        // Ghost 생성 시 levelConfig 주입
+                        Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, levelConfig); // <-- 변경됨
+
+                        ghosts.add(ghost);
+                        if (dataChar.equals("b")) {
+                            blinky = (Blinky) ghost; //Inky 클래스의 setStrategy(...)에서 사용됨
+                        }
+                    }
+                    case "." -> {
+                        objects.add(new PacGum(xx * cellSize, yy * cellSize));
+                        totalGumsOnMap++;
+                    }
+                    case "o" -> {
+                        objects.add(new SuperPacGum(xx * cellSize, yy * cellSize));
+                        totalGumsOnMap++;
+                    }
+                    case "-" ->  // 유령의 집 벽 생성
+                            objects.add(new GhostHouse(xx * cellSize, yy * cellSize));
                 }
             }
         }
@@ -115,6 +138,10 @@ public class Game implements Observer {
     public List<Entity> getEntities() {
         return objects;
     }
+
+    // PlayingState를 위한 Getter
+    public boolean isGameOver() { return isGameOver; }
+    public boolean isLevelCleared() { return isLevelCleared; }
 
     //모든 엔티티 업데이트
     public void update() {
@@ -146,26 +173,32 @@ public class Game implements Observer {
     @Override
     public void updatePacGumEaten(PacGum pg) {
         pg.destroy(); //팩껌은 팩맨이 먹었을 때 파괴됩니다.
+
         totalGumsOnMap--;
+        levelManager.addScore(levelManager.getCurrentLevelConfig().getScorePacGum());
+
         checkLevelClear();
     }
 
     @Override
     public void updateSuperPacGumEaten(SuperPacGum spg) {
-        spg.destroy(); //슈퍼팩껌은 팩맨이 먹었을 때 파괴됩니다.
+        spg.destroy(); // 슈퍼팩껌은 팩맨이 먹었을 때 파괴됩니다.
+
         totalGumsOnMap--;
+        levelManager.addScore(levelManager.getCurrentLevelConfig().getScoreSuperPacGum()); // 점수 추가
+
         for (Ghost gh : ghosts) {
             gh.getState().superPacGumEaten(); //슈퍼팩껌이 먹혔을 때 특별한 전환(transition)이 존재한다면, 유령의 상태가 바뀝니다.
         }
         checkLevelClear();
     }
 
-    //팩껌을 다 먹었는지 확인하고 게임 종료
+    /**
+     * 팩껌을 다 먹었는지 확인하고 레벨 클리어 상태로 변경합니다.
+     */
     private void checkLevelClear() {
         if (totalGumsOnMap == 0) {
-            System.out.println("YOU WIN!");
-            System.out.println("Score : " + GameLauncher.getUIPanel().getScore());
-            System.exit(0);
+            isLevelCleared = true;
         }
     }
 
@@ -173,9 +206,10 @@ public class Game implements Observer {
     public void updateGhostCollision(Ghost gh) {
         if (gh.getState() instanceof FrightenedMode) {
             gh.getState().eaten(); //유령이 먹혔을 때 특별한 전환(transition)이 존재한다면, 그 상태가 결과에 따라 바뀝니다.
+
+            levelManager.addScore(levelManager.getCurrentLevelConfig().getScoreGhostEaten()); // 점수 추가
         }else if (!(gh.getState() instanceof EatenMode)) {
-            System.out.println("Game over !\nScore : " + GameLauncher.getUIPanel().getScore()); //팩맨이 겁먹지도(frightened), 먹히지도(eaten) 않은 유령과 접촉했을 때, 게임 오버입니다!
-            System.exit(0); //TODO
+            isGameOver = true; // 상태 변경
         }
     }
 

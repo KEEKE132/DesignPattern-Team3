@@ -1,6 +1,6 @@
 package game;
 
-import game.gameconfig.LevelConfig;
+import game.gameconfig.LevelManager;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -16,25 +16,20 @@ public class GameLauncher {
 
         JPanel gameWindow = new JPanel();
 
-        LevelConfig levelConfig = LevelConfig.builder().build(); // level 기본 설정
-
-        LevelConfig level2Config = LevelConfig.builder()
-                .levelMap("level/level2.csv")
-                .speeds(4, 4) //팩맨과 유령의 속도는 8의 약수(1, 2, 4, 8)여야 한다.
-                .seconds(5, 25, 4, 3)
-                .scores(15, 150, 750)
-                .build();
+        // 1. LevelManager 생성 (내부에서 레벨들 로드됨)
+        LevelManager levelManager = new LevelManager();
 
         //"게임 영역" 생성
         try {
             //GameplayPanel은 Runnable이므로, 이 시점부터 백그라운드 스레드에서 게임 루프가 돌기 시작합니다.
-            gameWindow.add(new GameplayPanel(448,496, level2Config)); // <-- 변경
+            gameWindow.add(new GameplayPanel(448,496, levelManager));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //UI 생성 (점수를 표시하기 위함)
-        uiPanel = new UIPanel(256,496, level2Config); // <-- 변경
+        // UI 생성 (점수를 표시하기 위함)
+        // UIPanel은 levelManager을 받음
+        uiPanel = new UIPanel(256,496, levelManager);
         gameWindow.add(uiPanel);
 
         window.setContentPane(gameWindow);
