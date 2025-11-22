@@ -13,7 +13,7 @@ public abstract class Item extends StaticEntity {
     protected BufferedImage itemImage;
 
     public Item(int xPos, int yPos, String imagePath) {
-        super(16, xPos, yPos);
+        super(20, xPos, yPos);
 
         try {
             this.itemImage = ImageIO.read(getClass().getClassLoader().getResource(imagePath));
@@ -33,7 +33,7 @@ public abstract class Item extends StaticEntity {
     @Override
     public void render(Graphics2D g) {
         if (itemImage != null) {
-            int size = 16; // 그릴 이미지 크기
+            int size = 20; // 그릴 이미지 크기
             g.drawImage(itemImage, xPos, yPos, size, size, null);
         }
     }

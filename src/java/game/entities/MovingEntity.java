@@ -161,4 +161,8 @@ public abstract class MovingEntity extends Entity {
     public int getSpd() {
         return spd;
     }
+
+    public void setSpd(int spd) {
+        this.spd = spd;
+    }
 }

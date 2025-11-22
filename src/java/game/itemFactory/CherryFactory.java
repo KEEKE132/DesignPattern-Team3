@@ -1,11 +1,11 @@
 package game.itemFactory;
 
 import game.entities.items.scoreItems.Cherry;
-import game.entities.items.Item;
+import game.entities.items.scoreItems.ScoreItem;
 
 public class CherryFactory extends AbstractItemFactory {
     @Override
-    public Item createItem(int xPos, int yPos) {
+    public ScoreItem createItem(int xPos, int yPos) {
         return new Cherry(xPos, yPos);
     }
 }

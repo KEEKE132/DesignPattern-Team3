@@ -27,7 +27,7 @@ public class LevelManager {
         levels.add(
                 LevelConfig.builder()
                         .levelMap("level/temp1.csv")
-                        .speeds(2, 8)
+                        .speeds(2, 4)
                         .build()
         );
 
@@ -35,7 +35,7 @@ public class LevelManager {
         levels.add(
                 LevelConfig.builder()
                 .levelMap("level/temp2.csv")
-                .speeds(2, 8)
+                .speeds(2, 4)
                 .seconds(5, 25, 4, 2)
                 .scores(15, 150, 750)
                 .build()
@@ -45,7 +45,7 @@ public class LevelManager {
         levels.add(
                 LevelConfig.builder()
                         .levelMap("level/temp3.csv")
-                        .speeds(2, 8)
+                        .speeds(2, 4)
                         .seconds(5, 25, 4, 2)
                         .scores(15, 150, 750)
                         .build()

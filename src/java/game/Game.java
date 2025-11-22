@@ -11,10 +11,7 @@ import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
 import game.ghostVisitor.GhostVisitor;
 import game.ghostVisitor.StartLineVisitor;
-import game.itemFactory.AbstractItemFactory;
-import game.itemFactory.CherryFactory;
-import game.itemFactory.OrangeFactory;
-import game.itemFactory.StrawberryFactory;
+import game.itemFactory.*;
 import game.utils.CollisionDetector;
 import game.utils.CsvReader;
 import game.utils.KeyHandler;
@@ -113,11 +110,12 @@ public class Game implements Observer {
                             blinky = (Blinky) ghost; //Inky 클래스의 setStrategy(...)에서 사용됨
                         }
                     }
-                    case "C", "O", "S" -> {
+                    case "C", "O", "S", "H" -> {
                         abstractItemFactory = switch (dataChar) {
                             case "C" -> new CherryFactory();
                             case "O" -> new OrangeFactory();
                             case "S" -> new StrawberryFactory();
+                            case "H" -> new HasteFactory();
                             default -> abstractItemFactory;
                         };
 
