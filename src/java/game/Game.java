@@ -3,6 +3,7 @@ package game;
 import game.entities.*;
 import game.entities.ghosts.Blinky;
 import game.entities.ghosts.Ghost;
+import game.entities.items.Item;
 import game.gameconfig.LevelConfig;
 import game.gameconfig.LevelManager;
 import game.ghostFactory.*;
@@ -10,6 +11,10 @@ import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
 import game.ghostVisitor.GhostVisitor;
 import game.ghostVisitor.StartLineVisitor;
+import game.itemFactory.AbstractItemFactory;
+import game.itemFactory.CherryFactory;
+import game.itemFactory.OrangeFactory;
+import game.itemFactory.StrawberryFactory;
 import game.utils.CollisionDetector;
 import game.utils.CsvReader;
 import game.utils.KeyHandler;
@@ -25,6 +30,7 @@ public class Game implements Observer {
     private final List<Entity> objects = new ArrayList<>(); //생성된 모든 객체를 저장
     private final List<Ghost> ghosts = new ArrayList<>(); //유령만 저장
     private static final List<Wall> walls = new ArrayList<>(); //벽만 저장
+    private final List<Item> items = new ArrayList<>(); // 아이템 저장
 
     private static Pacman pacman;
     private static Blinky blinky;
@@ -33,6 +39,9 @@ public class Game implements Observer {
 
     // 맵의 총 팩껌 개수 (레벨 클리어 확인용)
     private int totalGumsOnMap = 0;
+
+    // 맵의 아이템 개수
+    private int totalItemsOnMap = 0;
 
     private boolean isGameOver = false;
     private boolean isLevelCleared = false;
@@ -59,6 +68,7 @@ public class Game implements Observer {
 
         CollisionDetector collisionDetector = new CollisionDetector(this);
         AbstractGhostFactory abstractGhostFactory = null;
+        AbstractItemFactory abstractItemFactory = null;
 
         //레벨은 "그리드"를 가지고 있으며, CSV 파일의 각 칸에 대해, 존재하는 문자에 따라 그리드의 한 칸에 특정 엔티티를 표시합니다.
         for(int xx = 0 ; xx < cellsPerRow ; xx++) { //맵의 모든 칸(xx, yy)을 순회
@@ -103,6 +113,19 @@ public class Game implements Observer {
                             blinky = (Blinky) ghost; //Inky 클래스의 setStrategy(...)에서 사용됨
                         }
                     }
+                    case "C", "O", "S" -> {
+                        abstractItemFactory = switch (dataChar) {
+                            case "C" -> new CherryFactory();
+                            case "O" -> new OrangeFactory();
+                            case "S" -> new StrawberryFactory();
+                            default -> abstractItemFactory;
+                        };
+
+                        Item item = abstractItemFactory.createItem(xx * cellSize, yy * cellSize);
+
+                        items.add(item);
+                        totalItemsOnMap++;
+                    }
                     case "." -> {
                         objects.add(new PacGum(xx * cellSize, yy * cellSize));
                         totalGumsOnMap++;
@@ -112,12 +135,13 @@ public class Game implements Observer {
                         totalGumsOnMap++;
                     }
                     case "-" ->  // 유령의 집 벽 생성
-                            objects.add(new GhostHouse(xx * cellSize, yy * cellSize));
+                        objects.add(new GhostHouse(xx * cellSize, yy * cellSize));
                 }
             }
         }
         objects.add(pacman);
         objects.addAll(ghosts);
+        objects.addAll(items);
 
         for (Entity o : objects) {
             if (o instanceof Wall) {
@@ -181,6 +205,16 @@ public class Game implements Observer {
     }
 
     @Override
+    public void updateItemEaten(Item item) {
+        item.destroy();
+
+        totalItemsOnMap--;
+        levelManager.addScore(item.getScoreValue());
+
+        checkLevelClear();
+    }
+
+    @Override
     public void updateSuperPacGumEaten(SuperPacGum spg) {
         spg.destroy(); // 슈퍼팩껌은 팩맨이 먹었을 때 파괴됩니다.
 
@@ -194,10 +228,10 @@ public class Game implements Observer {
     }
 
     /**
-     * 팩껌을 다 먹었는지 확인하고 레벨 클리어 상태로 변경합니다.
+     * 팩껌과 아이템을 모두 먹은 경우 레벨 클리어 상태로 변경합니다.
      */
     private void checkLevelClear() {
-        if (totalGumsOnMap == 0) {
+        if (totalGumsOnMap == 0 && totalItemsOnMap == 0) {
             isLevelCleared = true;
         }
     }
