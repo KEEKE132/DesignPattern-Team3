@@ -65,7 +65,7 @@ public class Game implements Observer {
 
         CollisionDetector collisionDetector = new CollisionDetector(this);
         AbstractGhostFactory abstractGhostFactory = null;
-        AbstractItemFactory abstractItemFactory = null;
+        ItemFactory itemFactory = null;
 
         //레벨은 "그리드"를 가지고 있으며, CSV 파일의 각 칸에 대해, 존재하는 문자에 따라 그리드의 한 칸에 특정 엔티티를 표시합니다.
         for(int xx = 0 ; xx < cellsPerRow ; xx++) { //맵의 모든 칸(xx, yy)을 순회
@@ -111,15 +111,15 @@ public class Game implements Observer {
                         }
                     }
                     case "C", "O", "S", "H" -> {
-                        abstractItemFactory = switch (dataChar) {
+                        itemFactory = switch (dataChar) {
                             case "C" -> new CherryFactory();
                             case "O" -> new OrangeFactory();
                             case "S" -> new StrawberryFactory();
                             case "H" -> new HasteFactory();
-                            default -> abstractItemFactory;
+                            default -> itemFactory;
                         };
 
-                        Item item = abstractItemFactory.createItem(xx * cellSize, yy * cellSize);
+                        Item item = itemFactory.createItem(xx * cellSize, yy * cellSize);
                         items.add(item);
 
                         // 클리어에 필요한 아이템인 경우에만 totalRequiredItemsOnMap 더함
