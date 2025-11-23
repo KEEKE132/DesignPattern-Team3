@@ -1,9 +1,9 @@
 package game.entities;
 
-import game.Game;
 import game.Observer;
 import game.Sujet;
 import game.entities.ghosts.Ghost;
+import game.entities.items.Item;
 import game.gameconfig.LevelConfig;
 import game.utils.CollisionDetector;
 import game.utils.KeyHandler;
@@ -75,6 +75,11 @@ public class Pacman extends MovingEntity implements Sujet {
             notifyObserverPacGumEaten(pg);
         }
 
+        Item item = (Item) collisionDetector.checkCollision(this, Item.class);
+        if (item != null) {
+            notifyObserverItemEaten(item);
+        }
+
         SuperPacGum spg = (SuperPacGum) collisionDetector.checkCollision(this, SuperPacGum.class);
         if (spg != null) {
             notifyObserverSuperPacGumEaten(spg);
@@ -120,5 +125,10 @@ public class Pacman extends MovingEntity implements Sujet {
     @Override
     public void notifyObserverGhostCollision(Ghost gh) {
         observerCollection.forEach(obs -> obs.updateGhostCollision(gh));
+    }
+
+    @Override
+    public void notifyObserverItemEaten(Item item) {
+        observerCollection.forEach(obs -> obs.updateItemEaten(item));
     }
 }
