@@ -1,6 +1,8 @@
 package game.ghostStates;
 
 import game.entities.ghosts.Ghost;
+import game.ghostVisitor.GhostVisitor;
+import game.ghostVisitor.HouseLineVisitor;
 import game.utils.Utils;
 import game.utils.WallCollisionDetector;
 
@@ -13,6 +15,8 @@ public class EatenMode extends GhostState{
     //유령이 자신의 집으로 돌아갔을 때의 전환
     @Override
     public void insideHouse() {
+        GhostVisitor visitor = new HouseLineVisitor();
+        ghost.accept(visitor);
         ghost.switchHouseMode();
     }
 
