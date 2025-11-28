@@ -1,7 +1,11 @@
 package game.entities.ghosts;
 
 import game.Game;
+import game.Observer;
 import game.entities.MovingEntity;
+import game.entities.PacGum;
+import game.entities.SuperPacGum;
+import game.entities.items.Item;
 import game.ghostVisitor.GhostVisitor;
 import game.gameconfig.LevelConfig;
 import game.ghostStates.*;
@@ -13,7 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 //유령을 기술(설명)하기 위한 추상 클래스
-public abstract class Ghost extends MovingEntity {
+public abstract class Ghost extends MovingEntity implements Observer {
     protected GhostState state;
 
     protected final GhostState chaseMode;
@@ -176,6 +180,38 @@ public abstract class Ghost extends MovingEntity {
             renderDialogue(g);
         }
 
+    }
+
+    @Override
+    public void updatePacGumEaten(PacGum pg) {
+        // 특별한 행동이 없음
+    }
+
+    /**
+     * 슈퍼팩껌을 먹었을 때 호출됩니다.
+     * 유령의 상태를 Frightened 모드로 변경함
+     */
+    @Override
+    public void updateSuperPacGumEaten(SuperPacGum spg) {
+        this.state.superPacGumEaten();
+    }
+
+    /**
+     * 팩맨이 유령과 충돌했을 때 호출됩니다.
+     * 충돌한 유령이 '나(this)'이고, 내가 '겁먹은' 상태라면 '먹힌' 상태로 전환
+     */
+    @Override
+    public void updateGhostCollision(Ghost gh) {
+        if (this == gh) {
+            if (this.state instanceof FrightenedMode) {
+                this.state.eaten();
+            }
+        }
+    }
+
+    @Override
+    public void updateItemEaten(Item item){
+        // 특별한 행동이 없음
     }
 
     /**
