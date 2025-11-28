@@ -18,7 +18,7 @@ public class GameplayPanel extends JPanel implements Runnable {
     private boolean running = false;
 
     private BufferedImage img;
-    private Graphics2D g;
+    private Graphics2D g; // 오프스크린 버퍼(img)에 그리기 위한 그래픽 객체
 
     private final LevelManager levelManager; // 레벨 관리 객체 (Game을 생성할 때 필요)
     private KeyHandler key; // KeyHandler는 상태 객체들이 공유
@@ -34,7 +34,8 @@ public class GameplayPanel extends JPanel implements Runnable {
         setFocusable(true);
         requestFocus();
 
-        // (배경 이미지 로드는 PlayingState로 이동했으므로 삭제됨)
+        // 더블 버퍼링 활성화 (패널 깜빡임 방지)
+        setDoubleBuffered(true);
     }
 
     // 상태 전환 메서드
@@ -65,6 +66,7 @@ public class GameplayPanel extends JPanel implements Runnable {
     // 게임 초기화
     public void init() {
         running = true;
+        // 오프스크린 버퍼 이미지 생성
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g = (Graphics2D) img.getGraphics();
         key = new KeyHandler(this);
@@ -87,11 +89,26 @@ public class GameplayPanel extends JPanel implements Runnable {
         if (g != null && currentState != null) currentState.render(g);
     }
 
-    //게임 표시 : 렌더링이 완료된 그 이미지를 (화면에) 표시합니다.
+    /**
+     * draw(): 직접 그리지 않고 Swing에게 다시 그려달라고 요청만 합니다.
+     * 이 메서드는 게임 루프 스레드에서 호출되지만, repaint()는 스레드 안전(Thread-safe)합니다.
+     */
     public void draw() {
-        Graphics g2 = this.getGraphics();
-        g2.drawImage(img, 0, 0, width, height, null);
-        g2.dispose();
+        repaint();
+    }
+
+    /**
+     * paintComponent(Graphics g): 실제 화면에 그리는 메서드입니다.
+     * Swing의 이벤트 디스패치 스레드(EDT)에 의해 안전하게 호출됩니다.
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g); // 배경 클리어 (필수)
+
+        // render()에서 그려진 오프스크린 이미지(img)를 실제 화면 패널에 그립니다.
+        if (img != null) {
+            g.drawImage(img, 0, 0, width, height, null);
+        }
     }
 
     @Override
@@ -137,8 +154,8 @@ public class GameplayPanel extends JPanel implements Runnable {
                 lastUpdateTime = now - TBU;
             }
 
-            render(); // currentState에 위임
-            draw();
+            render(); // BufferedImage(img)에 그림을 그림
+            draw();   // 화면 갱신 요청 (repaint -> paintComponent)
 
             lastRenderTime = now;
             frameCount++;
@@ -146,7 +163,7 @@ public class GameplayPanel extends JPanel implements Runnable {
             int thisSecond = (int) (lastUpdateTime / 1000000000);
             if (thisSecond > lastSecondTime) {
                 if (frameCount != oldFrameCount) {
-                    //System.out.println("FPS : " + frameCount);
+                    // System.out.println("FPS : " + frameCount);
                     oldFrameCount = frameCount;
                 }
                 frameCount = 0;
