@@ -60,7 +60,6 @@ public class GameOverState implements GameState {
     @Override
     public void onExit() {
         // Playing으로 진입 전 초기화
-        gameplayPanel.getLevelManager().reset(); // 1. 데이터 초기화
-        GameLauncher.getUIPanel().refreshScore(); // 2. UIPanel 점수판 초기화
+        gameplayPanel.resetGame();
     }
 }

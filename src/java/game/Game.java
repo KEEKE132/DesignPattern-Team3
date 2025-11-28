@@ -75,7 +75,7 @@ public class Game implements Observer {
                     case "x" ->  //벽 생성
                             objects.add(new Wall(xx * cellSize, yy * cellSize));
                     case "P" -> {
-                        pacman = new Pacman(xx * cellSize, yy * cellSize, levelConfig); // Pacman 생성 시 levelConfig 주입
+                        pacman = new Pacman(xx * cellSize, yy * cellSize, levelConfig.getPacmanSpeed());
 
                         pacman.setCollisionDetector(collisionDetector);
 

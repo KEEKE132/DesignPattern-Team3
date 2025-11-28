@@ -52,6 +52,15 @@ public class GameplayPanel extends JPanel implements Runnable {
         return levelManager;
     }
 
+    public void quitGame() {
+        System.exit(0);
+    }
+
+    public void resetGame() {
+        levelManager.reset(); // 1. 데이터 초기화
+        GameLauncher.getUIPanel().refreshScore(); // 2. UIPanel 점수판 초기화
+    }
+
     @Override
     public void addNotify() {
         super.addNotify();
