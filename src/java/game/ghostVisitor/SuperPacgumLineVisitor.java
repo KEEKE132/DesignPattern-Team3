@@ -6,28 +6,28 @@ import game.entities.ghosts.Ghost;
 import game.entities.ghosts.Inky;
 import game.entities.ghosts.Pinky;
 
-public class StartLineVisitor implements GhostVisitor {
+public class SuperPacgumLineVisitor implements GhostVisitor {
 
     @Override
-    public void visit(Ghost target) { target.setDialogue("Hi I`m Ghost!"); }
-
-    @Override
-    public void visit(Blinky target) {
-        target.setDialogue("Hi I`m Blinky!");
+    public void visit(Ghost target) {
+        target.setDialogue("Run away!");
     }
 
     @Override
+    public void visit(Blinky target) { target.setDialogue("Not the pellet!"); }
+
+    @Override
     public void visit(Clyde target) {
-        target.setDialogue("Hi I`m Clyde!");
+        target.setDialogue("He's coming!");
     }
 
     @Override
     public void visit(Inky target) {
-        target.setDialogue("Hi I`m Inky!");
+        target.setDialogue("Retreat to base!");
     }
 
     @Override
     public void visit(Pinky target) {
-        target.setDialogue("Hi I`m Pinky!");
+        target.setDialogue("Just a few more seconds!");
     }
 }

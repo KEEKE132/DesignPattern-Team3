@@ -1,6 +1,8 @@
 package game.ghostStates;
 
 import game.entities.ghosts.Ghost;
+import game.ghostVisitor.EatenLineVisitor;
+import game.ghostVisitor.GhostVisitor;
 import game.utils.Utils;
 import jdk.jshell.execution.Util;
 
@@ -13,6 +15,8 @@ public class FrightenedMode extends GhostState{
     //유령이 먹혔을 때의 전환
     @Override
     public void eaten() {
+        GhostVisitor visitor = new EatenLineVisitor();
+        ghost.accept(visitor);
         ghost.switchEatenMode();
     }
 

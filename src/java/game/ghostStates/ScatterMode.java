@@ -1,6 +1,8 @@
 package game.ghostStates;
 
 import game.entities.ghosts.Ghost;
+import game.ghostVisitor.GhostVisitor;
+import game.ghostVisitor.SuperPacgumLineVisitor;
 
 //'휴식(흩어지기)'을 취하는 구체적인 상태
 public class ScatterMode extends GhostState{
@@ -11,6 +13,8 @@ public class ScatterMode extends GhostState{
     //슈퍼팩껌(SuperPacGum)이 먹혔을 때의 전환
     @Override
     public void superPacGumEaten() {
+        GhostVisitor visitor = new SuperPacgumLineVisitor();
+        ghost.accept(visitor);
         ghost.switchFrightenedMode();
     }
 
