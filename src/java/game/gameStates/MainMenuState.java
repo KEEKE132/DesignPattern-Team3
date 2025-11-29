@@ -53,7 +53,7 @@ public class MainMenuState implements GameState {
     public void onEnter() {
         // MainMenu로 진입 시 초기화
         gameplayPanel.getLevelManager().reset(); // 1. 데이터 초기화
-        GameLauncher.getUIPanel().refreshScore(); // 2. UIPanel 점수판 초기화
+        gameplayPanel.getScoreManager().resetScore();
     }
 
     @Override
