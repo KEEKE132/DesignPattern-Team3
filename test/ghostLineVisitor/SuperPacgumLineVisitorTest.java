@@ -41,7 +41,7 @@ class SuperPacgumLineVisitorTest {
         visitor.visit(blinky);
 
         // then
-        verify(blinky, times(1)).setDialogue("Not the pellet!");
+        verify(blinky).setDialogue("Not the pellet!");
     }
 
     @Test
@@ -54,7 +54,7 @@ class SuperPacgumLineVisitorTest {
         visitor.visit(pinky);
 
         // then
-        verify(pinky, times(1)).setDialogue("Just a few more seconds!");
+        verify(pinky).setDialogue("Just a few more seconds!");
     }
 
     @Test
@@ -67,7 +67,7 @@ class SuperPacgumLineVisitorTest {
         visitor.visit(inky);
 
         // then
-        verify(inky, times(1)).setDialogue("Retreat to base!");
+        verify(inky).setDialogue("Retreat to base!");
     }
 
     @Test
@@ -80,7 +80,7 @@ class SuperPacgumLineVisitorTest {
         visitor.visit(clyde);
 
         // then
-        verify(clyde, times(1)).setDialogue("He's coming!");
+        verify(clyde).setDialogue("He's coming!");
     }
 
     @Test
@@ -93,7 +93,7 @@ class SuperPacgumLineVisitorTest {
         visitor.visit(ghost);
 
         // then
-        verify(ghost, times(1)).setDialogue("Run away!");
+        verify(ghost).setDialogue("Run away!");
     }
 
     @Test
@@ -106,7 +106,7 @@ class SuperPacgumLineVisitorTest {
         blinky.accept(visitor);
 
         // then
-        verify(blinky, times(1)).setDialogue("Not the pellet!");
+        verify(blinky).setDialogue("Not the pellet!");
     }
 
     @Test
@@ -119,7 +119,7 @@ class SuperPacgumLineVisitorTest {
         pinky.accept(visitor);
 
         // then
-        verify(pinky, times(1)).setDialogue("Just a few more seconds!");
+        verify(pinky).setDialogue("Just a few more seconds!");
     }
 
     @Test
@@ -132,7 +132,7 @@ class SuperPacgumLineVisitorTest {
         inky.accept(visitor);
 
         // then
-        verify(inky, times(1)).setDialogue("Retreat to base!");
+        verify(inky).setDialogue("Retreat to base!");
     }
 
     @Test
@@ -145,7 +145,7 @@ class SuperPacgumLineVisitorTest {
         clyde.accept(visitor);
 
         // then
-        verify(clyde, times(1)).setDialogue("He's coming!");
+        verify(clyde).setDialogue("He's coming!");
     }
 
     @Test
@@ -164,10 +164,10 @@ class SuperPacgumLineVisitorTest {
         visitor.visit(clyde);
 
         // then
-        verify(blinky, times(1)).setDialogue("Not the pellet!");
-        verify(pinky, times(1)).setDialogue("Just a few more seconds!");
-        verify(inky, times(1)).setDialogue("Retreat to base!");
-        verify(clyde, times(1)).setDialogue("He's coming!");
+        verify(blinky).setDialogue("Not the pellet!");
+        verify(pinky).setDialogue("Just a few more seconds!");
+        verify(inky).setDialogue("Retreat to base!");
+        verify(clyde).setDialogue("He's coming!");
     }
 }
 

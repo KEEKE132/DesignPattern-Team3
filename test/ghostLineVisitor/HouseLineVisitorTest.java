@@ -41,7 +41,7 @@ class HouseLineVisitorTest {
         visitor.visit(blinky);
 
         // then
-        verify(blinky, times(1)).setDialogue("Fully recovered!\nTime for revenge!");
+        verify(blinky).setDialogue("Fully recovered!\nTime for revenge!");
     }
 
     @Test
@@ -54,7 +54,7 @@ class HouseLineVisitorTest {
         visitor.visit(pinky);
 
         // then
-        verify(pinky, times(1)).setDialogue("Recovered!\nI won't miss next time!");
+        verify(pinky).setDialogue("Recovered!\nI won't miss next time!");
     }
 
     @Test
@@ -67,7 +67,7 @@ class HouseLineVisitorTest {
         visitor.visit(inky);
 
         // then
-        verify(inky, times(1)).setDialogue("Let me think of a new strategy...");
+        verify(inky).setDialogue("Let me think of a new strategy...");
     }
 
     @Test
@@ -80,7 +80,7 @@ class HouseLineVisitorTest {
         visitor.visit(clyde);
 
         // then
-        verify(clyde, times(1)).setDialogue("Phew! I'm feeling better now!");
+        verify(clyde).setDialogue("Phew! I'm feeling better now!");
     }
 
     @Test
@@ -93,7 +93,7 @@ class HouseLineVisitorTest {
         visitor.visit(ghost);
 
         // then
-        verify(ghost, times(1)).setDialogue("I'm back and ready!");
+        verify(ghost).setDialogue("I'm back and ready!");
     }
 
     @Test
@@ -106,7 +106,7 @@ class HouseLineVisitorTest {
         blinky.accept(visitor);
 
         // then
-        verify(blinky, times(1)).setDialogue("Fully recovered!\nTime for revenge!");
+        verify(blinky).setDialogue("Fully recovered!\nTime for revenge!");
     }
 
     @Test
@@ -119,7 +119,7 @@ class HouseLineVisitorTest {
         pinky.accept(visitor);
 
         // then
-        verify(pinky, times(1)).setDialogue("Recovered!\nI won't miss next time!");
+        verify(pinky).setDialogue("Recovered!\nI won't miss next time!");
     }
 
     @Test
@@ -132,7 +132,7 @@ class HouseLineVisitorTest {
         inky.accept(visitor);
 
         // then
-        verify(inky, times(1)).setDialogue("Let me think of a new strategy...");
+        verify(inky).setDialogue("Let me think of a new strategy...");
     }
 
     @Test
@@ -145,7 +145,7 @@ class HouseLineVisitorTest {
         clyde.accept(visitor);
 
         // then
-        verify(clyde, times(1)).setDialogue("Phew! I'm feeling better now!");
+        verify(clyde).setDialogue("Phew! I'm feeling better now!");
     }
 
     @Test
@@ -164,10 +164,10 @@ class HouseLineVisitorTest {
         visitor.visit(clyde);
 
         // then
-        verify(blinky, times(1)).setDialogue("Fully recovered!\nTime for revenge!");
-        verify(pinky, times(1)).setDialogue("Recovered!\nI won't miss next time!");
-        verify(inky, times(1)).setDialogue("Let me think of a new strategy...");
-        verify(clyde, times(1)).setDialogue("Phew! I'm feeling better now!");
+        verify(blinky).setDialogue("Fully recovered!\nTime for revenge!");
+        verify(pinky).setDialogue("Recovered!\nI won't miss next time!");
+        verify(inky).setDialogue("Let me think of a new strategy...");
+        verify(clyde).setDialogue("Phew! I'm feeling better now!");
     }
 }
 

@@ -41,7 +41,7 @@ class EatenLineVisitorTest {
         visitor.visit(blinky);
 
         // then
-        verify(blinky, times(1)).setDialogue("Nooo! I'll be back!");
+        verify(blinky).setDialogue("Nooo! I'll be back!");
     }
 
     @Test
@@ -54,7 +54,7 @@ class EatenLineVisitorTest {
         visitor.visit(pinky);
 
         // then
-        verify(pinky, times(1)).setDialogue("So close!\nI almost had him!");
+        verify(pinky).setDialogue("So close!\nI almost had him!");
     }
 
     @Test
@@ -67,7 +67,7 @@ class EatenLineVisitorTest {
         visitor.visit(inky);
 
         // then
-        verify(inky, times(1)).setDialogue("I knew this would happen...");
+        verify(inky).setDialogue("I knew this would happen...");
     }
 
     @Test
@@ -80,7 +80,7 @@ class EatenLineVisitorTest {
         visitor.visit(clyde);
 
         // then
-        verify(clyde, times(1)).setDialogue("Ouch! That hurt!");
+        verify(clyde).setDialogue("Ouch! That hurt!");
     }
 
     @Test
@@ -93,7 +93,7 @@ class EatenLineVisitorTest {
         visitor.visit(ghost);
 
         // then
-        verify(ghost, times(1)).setDialogue("I've been eaten!");
+        verify(ghost).setDialogue("I've been eaten!");
     }
 
     @Test
@@ -106,7 +106,7 @@ class EatenLineVisitorTest {
         blinky.accept(visitor);
 
         // then
-        verify(blinky, times(1)).setDialogue("Nooo! I'll be back!");
+        verify(blinky).setDialogue("Nooo! I'll be back!");
     }
 
     @Test
@@ -119,7 +119,7 @@ class EatenLineVisitorTest {
         pinky.accept(visitor);
 
         // then
-        verify(pinky, times(1)).setDialogue("So close!\nI almost had him!");
+        verify(pinky).setDialogue("So close!\nI almost had him!");
     }
 
     @Test
@@ -132,7 +132,7 @@ class EatenLineVisitorTest {
         inky.accept(visitor);
 
         // then
-        verify(inky, times(1)).setDialogue("I knew this would happen...");
+        verify(inky).setDialogue("I knew this would happen...");
     }
 
     @Test
@@ -145,7 +145,7 @@ class EatenLineVisitorTest {
         clyde.accept(visitor);
 
         // then
-        verify(clyde, times(1)).setDialogue("Ouch! That hurt!");
+        verify(clyde).setDialogue("Ouch! That hurt!");
     }
 
     @Test
@@ -164,10 +164,10 @@ class EatenLineVisitorTest {
         visitor.visit(clyde);
 
         // then
-        verify(blinky, times(1)).setDialogue("Nooo! I'll be back!");
-        verify(pinky, times(1)).setDialogue("So close!\nI almost had him!");
-        verify(inky, times(1)).setDialogue("I knew this would happen...");
-        verify(clyde, times(1)).setDialogue("Ouch! That hurt!");
+        verify(blinky).setDialogue("Nooo! I'll be back!");
+        verify(pinky).setDialogue("So close!\nI almost had him!");
+        verify(inky).setDialogue("I knew this would happen...");
+        verify(clyde).setDialogue("Ouch! That hurt!");
     }
 }
 

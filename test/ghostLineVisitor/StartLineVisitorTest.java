@@ -41,7 +41,7 @@ class StartLineVisitorTest {
         visitor.visit(blinky);
 
         // then
-        verify(blinky, times(1)).setDialogue("Hi I`m Blinky!");
+        verify(blinky).setDialogue("Hi I`m Blinky!");
     }
 
     @Test
@@ -54,7 +54,7 @@ class StartLineVisitorTest {
         visitor.visit(pinky);
 
         // then
-        verify(pinky, times(1)).setDialogue("Hi I`m Pinky!");
+        verify(pinky).setDialogue("Hi I`m Pinky!");
     }
 
     @Test
@@ -67,7 +67,7 @@ class StartLineVisitorTest {
         visitor.visit(inky);
 
         // then
-        verify(inky, times(1)).setDialogue("Hi I`m Inky!");
+        verify(inky).setDialogue("Hi I`m Inky!");
     }
 
     @Test
@@ -80,7 +80,7 @@ class StartLineVisitorTest {
         visitor.visit(clyde);
 
         // then
-        verify(clyde, times(1)).setDialogue("Hi I`m Clyde!");
+        verify(clyde).setDialogue("Hi I`m Clyde!");
     }
 
     @Test
@@ -93,7 +93,7 @@ class StartLineVisitorTest {
         visitor.visit(ghost);
 
         // then
-        verify(ghost, times(1)).setDialogue("Hi I`m Ghost!");
+        verify(ghost).setDialogue("Hi I`m Ghost!");
     }
 
     @Test
@@ -106,7 +106,7 @@ class StartLineVisitorTest {
         blinky.accept(visitor);
 
         // then
-        verify(blinky, times(1)).setDialogue("Hi I`m Blinky!");
+        verify(blinky).setDialogue("Hi I`m Blinky!");
     }
 
     @Test
@@ -119,7 +119,7 @@ class StartLineVisitorTest {
         pinky.accept(visitor);
 
         // then
-        verify(pinky, times(1)).setDialogue("Hi I`m Pinky!");
+        verify(pinky).setDialogue("Hi I`m Pinky!");
     }
 
     @Test
@@ -132,7 +132,7 @@ class StartLineVisitorTest {
         inky.accept(visitor);
 
         // then
-        verify(inky, times(1)).setDialogue("Hi I`m Inky!");
+        verify(inky).setDialogue("Hi I`m Inky!");
     }
 
     @Test
@@ -145,6 +145,28 @@ class StartLineVisitorTest {
         clyde.accept(visitor);
 
         // then
-        verify(clyde, times(1)).setDialogue("Hi I`m Clyde!");
+        verify(clyde).setDialogue("Hi I`m Clyde!");
+    }
+
+    @Test
+    @DisplayName("모든 유령 타입이 StartLineVisitor를 올바르게 처리한다")
+    void testAllGhostTypesWithStartLineVisitor() {
+        // given
+        Blinky blinky = spy(new Blinky(100, 100, mockLevelConfig));
+        Pinky pinky = spy(new Pinky(200, 200, mockLevelConfig));
+        Inky inky = spy(new Inky(300, 300, mockLevelConfig));
+        Clyde clyde = spy(new Clyde(400, 400, mockLevelConfig));
+
+        // when
+        visitor.visit(pinky);
+        visitor.visit(inky);
+        visitor.visit(clyde);
+        visitor.visit(blinky);
+
+        // then
+        verify(blinky).setDialogue("Hi I`m Blinky!");
+        verify(pinky).setDialogue("Hi I`m Pinky!");
+        verify(inky).setDialogue("Hi I`m Inky!");
+        verify(clyde).setDialogue("Hi I`m Clyde!");
     }
 }
