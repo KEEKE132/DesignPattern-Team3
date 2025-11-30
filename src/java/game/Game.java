@@ -39,6 +39,9 @@ public class Game implements Observer {
     // 맵의 총 팩껌 개수 (레벨 클리어 확인용)
     private int totalGumsOnMap = 0;
 
+    // 유령 충돌 콤보 확인용
+    private int ghostsEatenCount = 0;
+
     // 맵의 아이템 개수
     private int totalRequiredItemsOnMap = 0;
 
@@ -226,6 +229,7 @@ public class Game implements Observer {
         spg.destroy(); // 슈퍼팩껌은 팩맨이 먹었을 때 파괴됩니다.
 
         totalGumsOnMap--;
+        ghostsEatenCount = 0;   // 콤보 카운트 초기화
         scoreManager.addScore(levelManager.getCurrentLevelConfig().getScoreSuperPacGum(), "HUNT TIME!"); // 점수 추가
 
         checkLevelClear();
@@ -243,7 +247,21 @@ public class Game implements Observer {
     @Override
     public void updateGhostCollision(Ghost gh) {
         if (gh.getState() instanceof FrightenedMode) {
-            scoreManager.addScore(levelManager.getCurrentLevelConfig().getScoreGhostEaten(), null); // 점수 추가
+            // 콤보 점수 계산
+            ghostsEatenCount++;
+            int baseScore = levelManager.getCurrentLevelConfig().getScoreGhostEaten();
+            int comboScore = baseScore * (int) Math.pow(2, ghostsEatenCount - 1);
+
+            // 메세지 조직
+            String msg = "";
+            if (ghostsEatenCount >= 4) {
+                msg = "MONSTER! +" + comboScore;
+            } else if (ghostsEatenCount > 1) {
+                msg = "COMBO! +" + comboScore;
+            } else {
+                msg = "GHOST +" + comboScore;
+            }
+            scoreManager.addScore(comboScore, msg); // 점수 추가
         }else if (!(gh.getState() instanceof EatenMode)) {
             isGameOver = true; // 상태 변경
         }

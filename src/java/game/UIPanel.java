@@ -84,7 +84,7 @@ public class UIPanel extends JPanel implements ScoreObserver {
         if (msg.contains("SPEED")) {
             messageLabel.setForeground(Color.CYAN);
             messageTimer.setInitialDelay(2000);
-        } else if (msg.contains("MONSTER") || msg.contains("COMBO")) {
+        } else if (msg.contains("MONSTER") || msg.contains("COMBO") || msg.contains("GHOST")) {
             messageLabel.setForeground(Color.ORANGE);
             messageTimer.setInitialDelay(1000); // 콤보는 짧게
         } else {
