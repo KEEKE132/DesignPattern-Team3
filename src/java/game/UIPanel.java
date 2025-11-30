@@ -5,6 +5,7 @@ import game.entities.SuperPacGum;
 import game.entities.ghosts.Ghost;
 import game.entities.items.Item;
 import game.gameconfig.LevelManager;
+import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
 
 import javax.swing.*;
@@ -54,11 +55,11 @@ public class UIPanel extends JPanel implements Observer {
         refreshScore();
     }
 
-    //팩맨이 팩껌을 먹었다는 알림을 받으면 호출 -> frightened이면, 설정값만큼 추가
+    //팩맨이 팩껌을 먹었다는 알림을 받으면 호출 -> EatenMode이면, 설정값만큼 추가
     @Override
     public void updateGhostCollision(Ghost gh) {
-        // 팩맨이 유령과 접촉한 경우, 유령이 "frightened(겁먹은)" 모드일 때만 점수를 업데이트합니다.
-        if (gh.getState() instanceof FrightenedMode) refreshScore();
+        // 팩맨이 유령과 접촉한 경우, 유령이 "EatenMode(먹힌)" 모드일 때만 점수를 업데이트합니다.
+        if (gh.getState() instanceof EatenMode) refreshScore();
     }
 
     @Override

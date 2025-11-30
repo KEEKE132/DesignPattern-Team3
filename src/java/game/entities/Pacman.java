@@ -4,7 +4,6 @@ import game.Observer;
 import game.Sujet;
 import game.entities.ghosts.Ghost;
 import game.entities.items.Item;
-import game.gameconfig.LevelConfig;
 import game.utils.CollisionDetector;
 import game.utils.KeyHandler;
 import game.utils.WallCollisionDetector;
@@ -17,8 +16,13 @@ public class Pacman extends MovingEntity implements Sujet {
     private CollisionDetector collisionDetector;//충돌감지기
     private List<Observer> observerCollection; //UIPanel와 Game를 구독자로 관리
 
+    // 속도 버프(Haste Item) 관리를 위한 필드
+    private int hasteFrameTimer = 0;     // 남은 지속 시간 (프레임 단위)
+    private int defaultSpd;              // 원래 속도 저장용
+
     public Pacman(int xPos, int yPos, int spd) {
         super(32, xPos, yPos, spd, "pacman.png", 4, 0.3f);
+        defaultSpd = spd; // 생성 시 기본 속도를 저장
         observerCollection = new ArrayList<>(); //팩맨의 "구독자" 목록을 초기화
     }
 
@@ -68,6 +72,10 @@ public class Pacman extends MovingEntity implements Sujet {
 
     @Override
     public void update() {
+        // 매 프레임마다 버프 시간 체크
+        // (PausedState에서는 update()가 호출되지 않으므로 타이머도 멈추게 됩니다.)
+        updateHasteState();
+
         //팩맨이 팩껌, 슈퍼팩껌, 또는 유령과 접촉했는지 매번 테스트하고, 그에 따라 구독자들에게 알립니다.
         PacGum pg = (PacGum) collisionDetector.checkCollision(this, PacGum.class);
         if (pg != null) {
@@ -95,6 +103,40 @@ public class Pacman extends MovingEntity implements Sujet {
         if (!WallCollisionDetector.checkWallCollision(this, xSpd, ySpd)) {
             updatePosition();
         }
+    }
+
+    /**
+     * 프레임마다 호출되어 버프 시간을 줄이고, 시간이 다 되면 속도를 복구함
+     */
+    private void updateHasteState() {
+        if (hasteFrameTimer > 0) {
+            hasteFrameTimer--; // 1 프레임 감소
+
+            // 시간이 다 되면 원래 속도로 복귀
+            if (hasteFrameTimer == 0) {
+                setSpd(defaultSpd);
+            }
+        }
+    }
+
+    /**
+     * 외부(아이템)에서 속도 버프를 적용할 때 호출하는 메서드
+     * @param durationFrames 지속할 프레임 수 (예: 5초 * 60FPS = 300)
+     */
+    public void applyHaste(int durationFrames) {
+        // 이미 버프 중이 아닐 때만 원래 속도를 저장 (중복 적용 시 원래 속도가 덮어써지는 것 방지)
+        if (hasteFrameTimer == 0) {
+            defaultSpd = spd;
+        }
+
+        // 지속 시간 내에 여러 개 먹으면 속도가 중첩됨
+        int newSpeed = spd * 2;
+
+        // 속도 증가 (최대 속도는 8로 제한 - 그리드 크기가 8이라서 너무 빠르면 벽 뚫음 방지)
+        setSpd(Math.min(newSpeed, 8));
+
+        // 시간 설정 (이미 버프 중이면 시간만 다시 연장됨)
+        hasteFrameTimer = durationFrames;
     }
 
     public void setCollisionDetector(CollisionDetector collisionDetector) {

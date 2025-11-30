@@ -9,7 +9,7 @@ import java.util.List;
 public class LevelManager {
     private final List<LevelConfig> levels; //레벨 설정 목록
     private int currentLevelIndex;          // 현재 진행 중인 레벨 인덱스
-    private int currentScore;               // 현재까지 누적된 총 점수 (UiPanel 대신에 LevelManager에서 관리)
+    private int currentScore;                 // 현재까지 누적된 총 점수 (UiPanel 대신에 LevelManager에서 관리)
 
     public LevelManager() {
         levels = new ArrayList<>();
@@ -27,7 +27,7 @@ public class LevelManager {
         levels.add(
                 LevelConfig.builder()
                         .levelMap("level/temp1.csv")
-                        .speeds(2, 4)
+                        .speeds(2, 1)
                         .build()
         );
 
