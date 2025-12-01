@@ -3,9 +3,11 @@ package game;
 import game.entities.*;
 import game.entities.ghosts.Blinky;
 import game.entities.ghosts.Ghost;
+import game.entities.items.HasteItem;
 import game.entities.items.Item;
 import game.gameconfig.LevelConfig;
 import game.gameconfig.LevelManager;
+import game.gameconfig.ScoreManager;
 import game.ghostFactory.*;
 import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
@@ -37,6 +39,9 @@ public class Game implements Observer {
     // 맵의 총 팩껌 개수 (레벨 클리어 확인용)
     private int totalGumsOnMap = 0;
 
+    // 유령 충돌 콤보 확인용
+    private int ghostsEatenCount = 0;
+
     // 맵의 아이템 개수
     private int totalRequiredItemsOnMap = 0;
 
@@ -44,10 +49,13 @@ public class Game implements Observer {
     private boolean isLevelCleared = false;
 
     private final LevelManager levelManager;
+    private final ScoreManager scoreManager;
 
     //생성자: LevelManager를 받음
-    public Game(LevelManager levelManager){
+    public Game(LevelManager levelManager, ScoreManager scoreManager) {
         this.levelManager = levelManager;
+        this.scoreManager = scoreManager;
+
         LevelConfig levelConfig = levelManager.getCurrentLevelConfig(); // 현재 레벨 설정을 가져옴
 
         //게임 초기화
@@ -86,12 +94,6 @@ public class Game implements Observer {
                          * 그래야 팩껌을 먹었을 때 점수가 먼저 증가함
                          */
                         pacman.registerObserver(this); // Game 클래스 자신을 팩맨의 첫 번째 구독자로 등록
-
-                        /*
-                         * 2. UIPanel(화면)을 '나중에' 등록함
-                         * 증가된 최신 점수를 읽어서 화면에 표시함
-                         */
-                        pacman.registerObserver(GameLauncher.getUIPanel()); // UIPanel를 팩맨의 두 번째 구독자로 등록
                     }
                     case "b", "p", "i", "c" -> {
                         abstractGhostFactory = switch (dataChar) {
@@ -201,7 +203,7 @@ public class Game implements Observer {
         pg.destroy(); //팩껌은 팩맨이 먹었을 때 파괴됩니다.
 
         totalGumsOnMap--;
-        levelManager.addScore(levelManager.getCurrentLevelConfig().getScorePacGum());
+        scoreManager.addScore(levelManager.getCurrentLevelConfig().getScorePacGum(), null);
 
         checkLevelClear();
     }
@@ -210,6 +212,10 @@ public class Game implements Observer {
     public void updateItemEaten(Item item) {
         item.destroy();
         item.onEaten(this);
+
+        if (item instanceof HasteItem) {    // UI 패널에 메세지 호출
+            scoreManager.addScore(0, "SPEED UP!");
+        }
 
         // 스테이지 클리어에 필요한 아이템인 경우에만 로직 작동
         if (item.isRequiredToClear()) {
@@ -223,7 +229,8 @@ public class Game implements Observer {
         spg.destroy(); // 슈퍼팩껌은 팩맨이 먹었을 때 파괴됩니다.
 
         totalGumsOnMap--;
-        levelManager.addScore(levelManager.getCurrentLevelConfig().getScoreSuperPacGum()); // 점수 추가
+        ghostsEatenCount = 0;   // 콤보 카운트 초기화
+        scoreManager.addScore(levelManager.getCurrentLevelConfig().getScoreSuperPacGum(), "HUNT TIME!"); // 점수 추가
 
         checkLevelClear();
     }
@@ -240,7 +247,21 @@ public class Game implements Observer {
     @Override
     public void updateGhostCollision(Ghost gh) {
         if (gh.getState() instanceof FrightenedMode) {
-            levelManager.addScore(levelManager.getCurrentLevelConfig().getScoreGhostEaten()); // 점수 추가
+            // 콤보 점수 계산
+            ghostsEatenCount++;
+            int baseScore = levelManager.getCurrentLevelConfig().getScoreGhostEaten();
+            int comboScore = baseScore * (int) Math.pow(2, ghostsEatenCount - 1);
+
+            // 메세지 조직
+            String msg = "";
+            if (ghostsEatenCount >= 4) {
+                msg = "MONSTER! +" + comboScore;
+            } else if (ghostsEatenCount > 1) {
+                msg = "COMBO! +" + comboScore;
+            } else {
+                msg = "GHOST +" + comboScore;
+            }
+            scoreManager.addScore(comboScore, msg); // 점수 추가
         }else if (!(gh.getState() instanceof EatenMode)) {
             isGameOver = true; // 상태 변경
         }
@@ -254,7 +275,7 @@ public class Game implements Observer {
         return firstInput;
     }
 
-    public LevelManager getLevelManager() {
-        return this.levelManager;
+    public ScoreManager getScoreManager() {
+        return this.scoreManager;
     }
 }

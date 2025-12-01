@@ -3,6 +3,7 @@ package game;
 import game.gameStates.GameState;
 import game.gameStates.MainMenuState;
 import game.gameconfig.LevelManager;
+import game.gameconfig.ScoreManager;
 import game.utils.KeyHandler;
 
 import javax.swing.*;
@@ -21,14 +22,16 @@ public class GameplayPanel extends JPanel implements Runnable {
     private Graphics2D g; // 오프스크린 버퍼(img)에 그리기 위한 그래픽 객체
 
     private final LevelManager levelManager; // 레벨 관리 객체 (Game을 생성할 때 필요)
+    private final ScoreManager scoreManager; // 점수 관리 객체 (Game을 생성할 때 필요)
     private KeyHandler key; // KeyHandler는 상태 객체들이 공유
     private GameState currentState; // 현재 상태 (메인 메뉴, 플레이 중, 게임 승리, 게임 오버)
 
     // 생성자가 LevelManager를 주입받도록 변경
-    public GameplayPanel(int width, int height, LevelManager levelManager) throws IOException {
+    public GameplayPanel(int width, int height, LevelManager levelManager, ScoreManager scoreManager) throws IOException {
         GameplayPanel.width = width;
         GameplayPanel.height = height;
         this.levelManager = levelManager;
+        this.scoreManager = scoreManager;
 
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
@@ -46,6 +49,10 @@ public class GameplayPanel extends JPanel implements Runnable {
 
         currentState = newState;
         currentState.onEnter(); // 새 상태 초기화
+    }
+
+    public ScoreManager getScoreManager() {
+        return scoreManager;
     }
 
     // 상태 클래스들이 설정값에 접근하기 위해 사용

@@ -9,13 +9,10 @@ import java.util.List;
 public class LevelManager {
     private final List<LevelConfig> levels; //레벨 설정 목록
     private int currentLevelIndex;          // 현재 진행 중인 레벨 인덱스
-    private int currentScore;               // 현재까지 누적된 총 점수 (UiPanel 대신에 LevelManager에서 관리)
 
     public LevelManager() {
         levels = new ArrayList<>();
         currentLevelIndex = 0;
-        currentScore = 0;
-
         loadLevels(); // 레벨 설정 로드
     }
 
@@ -79,11 +76,9 @@ public class LevelManager {
 
     /**
      * 게임을 처음(1레벨)부터 다시 시작하기 위해 상태를 리셋
-     * 점수도 0으로 초기화
      */
     public void reset() {
         currentLevelIndex = 0;
-        currentScore = 0;
     }
 
     /**
@@ -92,19 +87,5 @@ public class LevelManager {
      */
     public int getCurrentLevelNumber() {
         return currentLevelIndex + 1;
-    }
-
-    /**
-     * 점수를 추가.
-     */
-    public void addScore(int score) {
-        this.currentScore += score;
-    }
-
-    /**
-     * 현재 총 점수를 반환.
-     */
-    public int getCurrentScore() {
-        return currentScore;
     }
 }

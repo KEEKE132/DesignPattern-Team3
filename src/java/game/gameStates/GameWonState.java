@@ -32,7 +32,7 @@ public class GameWonState implements GameState {
         // 최종 점수 표시
         g.setColor(Color.YELLOW);
         g.setFont(new Font("Arial", Font.BOLD, 30));
-        String scoreMsg = "Total Score: " + gameplayPanel.getLevelManager().getCurrentScore();
+        String scoreMsg = "Total Score: " + gameplayPanel.getScoreManager().getCurrentScore();
         x = (GameplayPanel.width - g.getFontMetrics().stringWidth(scoreMsg)) / 2;
         g.drawString(scoreMsg, x, y + 80);
 

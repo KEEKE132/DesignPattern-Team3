@@ -1,6 +1,7 @@
 package game;
 
 import game.gameconfig.LevelManager;
+import game.gameconfig.ScoreManager;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -18,18 +19,19 @@ public class GameLauncher {
 
         // 1. LevelManager 생성 (내부에서 레벨들 로드됨)
         LevelManager levelManager = new LevelManager();
+        ScoreManager scoreManager = new ScoreManager();
 
         //"게임 영역" 생성
         try {
             //GameplayPanel은 Runnable이므로, 이 시점부터 백그라운드 스레드에서 게임 루프가 돌기 시작합니다.
-            gameWindow.add(new GameplayPanel(448,496, levelManager));
+            gameWindow.add(new GameplayPanel(448,496, levelManager, scoreManager));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // UI 생성 (점수를 표시하기 위함)
         // UIPanel은 levelManager을 받음
-        uiPanel = new UIPanel(256,496, levelManager);
+        uiPanel = new UIPanel(256,496, scoreManager);
         gameWindow.add(uiPanel);
 
         window.setContentPane(gameWindow);
@@ -37,9 +39,5 @@ public class GameLauncher {
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
-    }
-
-    public static UIPanel getUIPanel() {
-        return uiPanel;
     }
 }
