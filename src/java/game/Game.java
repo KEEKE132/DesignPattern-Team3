@@ -152,6 +152,7 @@ public class Game implements Observer {
 
         GhostVisitor startLineVisitor = new StartLineVisitor();
         for(Ghost g : ghosts) {
+            pacman.registerObserver(g); // 유령을 옵저버로 등록함
             g.accept(startLineVisitor);
         }
     }
@@ -224,9 +225,6 @@ public class Game implements Observer {
         totalGumsOnMap--;
         levelManager.addScore(levelManager.getCurrentLevelConfig().getScoreSuperPacGum()); // 점수 추가
 
-        for (Ghost gh : ghosts) {
-            gh.getState().superPacGumEaten(); //슈퍼팩껌이 먹혔을 때 특별한 전환(transition)이 존재한다면, 유령의 상태가 바뀝니다.
-        }
         checkLevelClear();
     }
 
@@ -242,8 +240,6 @@ public class Game implements Observer {
     @Override
     public void updateGhostCollision(Ghost gh) {
         if (gh.getState() instanceof FrightenedMode) {
-            gh.getState().eaten(); //유령이 먹혔을 때 특별한 전환(transition)이 존재한다면, 그 상태가 결과에 따라 바뀝니다.
-
             levelManager.addScore(levelManager.getCurrentLevelConfig().getScoreGhostEaten()); // 점수 추가
         }else if (!(gh.getState() instanceof EatenMode)) {
             isGameOver = true; // 상태 변경

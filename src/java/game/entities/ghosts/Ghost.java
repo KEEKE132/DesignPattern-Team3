@@ -1,7 +1,11 @@
 package game.entities.ghosts;
 
 import game.Game;
+import game.Observer;
 import game.entities.MovingEntity;
+import game.entities.PacGum;
+import game.entities.SuperPacGum;
+import game.entities.items.Item;
 import game.ghostVisitor.GhostVisitor;
 import game.gameconfig.LevelConfig;
 import game.ghostStates.*;
@@ -13,7 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 //유령을 기술(설명)하기 위한 추상 클래스
-public abstract class Ghost extends MovingEntity {
+public abstract class Ghost extends MovingEntity implements Observer {
     protected GhostState state;
 
     protected final GhostState chaseMode;
@@ -178,6 +182,38 @@ public abstract class Ghost extends MovingEntity {
 
     }
 
+    @Override
+    public void updatePacGumEaten(PacGum pg) {
+        // 특별한 행동이 없음
+    }
+
+    /**
+     * 슈퍼팩껌을 먹었을 때 호출됩니다.
+     * 유령의 상태를 Frightened 모드로 변경함
+     */
+    @Override
+    public void updateSuperPacGumEaten(SuperPacGum spg) {
+        this.state.superPacGumEaten();
+    }
+
+    /**
+     * 팩맨이 유령과 충돌했을 때 호출됩니다.
+     * 충돌한 유령이 '나(this)'이고, 내가 '겁먹은' 상태라면 '먹힌' 상태로 전환
+     */
+    @Override
+    public void updateGhostCollision(Ghost gh) {
+        if (this == gh) {
+            if (this.state instanceof FrightenedMode) {
+                this.state.eaten();
+            }
+        }
+    }
+
+    @Override
+    public void updateItemEaten(Item item){
+        // 특별한 행동이 없음
+    }
+
     /**
      * 유령 위에 대사를 렌더링합니다.
      * @param g Graphics2D 객체
@@ -186,30 +222,46 @@ public abstract class Ghost extends MovingEntity {
         // 폰트 설정
         Font font = new Font("맑은 고딕", Font.BOLD, 12);
         g.setFont(font);
-
-        // 텍스트 크기 측정
         FontMetrics fm = g.getFontMetrics();
-        int textWidth = fm.stringWidth(currentDialogue);
-        int textHeight = fm.getHeight();
+
+        // 대사를 줄바꿈 기준으로 분리
+        String[] lines = currentDialogue.split("\n");
+
+        // 가장 긴 줄의 너비 계산
+        int maxTextWidth = 0;
+        for (String line : lines) {
+            int lineWidth = fm.stringWidth(line);
+            if (lineWidth > maxTextWidth) {
+                maxTextWidth = lineWidth;
+            }
+        }
+
+        int lineHeight = fm.getHeight();
+        int totalHeight = lineHeight * lines.length;
 
         // 대사 위치 계산 (유령 위쪽)
-        int dialogueX = xPos + (size - textWidth) / 2;
-        int dialogueY = yPos - 10;
+        int dialogueX = xPos + (size - maxTextWidth) / 2;
+        int dialogueY = yPos - 10 - totalHeight;
 
         // 배경 박스 그리기
-        int padding = 4;
-        g.setColor(new Color(0, 0, 0, 180)); // 반투명 검은색
-        g.fillRoundRect(dialogueX - padding, dialogueY - textHeight + 2,
-                       textWidth + padding * 2, textHeight, 5, 5);
+        int padding = 0;
+        g.setColor(new Color(0, 0, 0, 180));
+        g.fillRoundRect(dialogueX - padding, dialogueY - padding,
+            maxTextWidth + padding * 2, totalHeight + padding * 2, 5, 5);
 
         // 테두리 그리기
         g.setColor(Color.WHITE);
-        g.drawRoundRect(dialogueX - padding, dialogueY - textHeight + 2,
-                       textWidth + padding * 2, textHeight, 5, 5);
+        g.drawRoundRect(dialogueX - padding, dialogueY - padding,
+            maxTextWidth + padding * 2, totalHeight + padding * 2, 5, 5);
 
-        // 텍스트 그리기
+        // 각 줄의 텍스트 그리기
         g.setColor(Color.WHITE);
-        g.drawString(currentDialogue, dialogueX, dialogueY);
+        for (int i = 0; i < lines.length; i++) {
+            int lineWidth = fm.stringWidth(lines[i]);
+            int lineX = xPos + (size - lineWidth) / 2; // 각 줄을 중앙 정렬
+            int lineY = dialogueY + fm.getAscent() + (i * lineHeight);
+            g.drawString(lines[i], lineX, lineY);
+        }
     }
 
     /**
