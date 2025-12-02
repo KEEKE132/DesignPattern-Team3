@@ -76,11 +76,15 @@ public class PlayingState implements GameState {
         // Game 객체 생성 (start 또는 Restart 시에만)
         // 일시정지 후 복귀 시에는 game 객체가 이미 존재하므로(not-null) if문은 건너뜀
         if (game == null) {
-            game = new Game(gameplayPanel.getLevelManager(), gameplayPanel.getScoreManager());
+            game = createGame();
             Game.setFirstInput(false);
         }
     }
 
     @Override
     public void onExit() {}
+
+    protected Game createGame() {
+        return new Game(gameplayPanel.getLevelManager(), gameplayPanel.getScoreManager());
+    }
 }

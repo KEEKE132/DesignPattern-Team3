@@ -18,8 +18,8 @@ public class Pacman extends MovingEntity implements Sujet {
     private List<Observer> observerCollection; //UIPanel와 Game를 구독자로 관리
 
     // 생성자가 LevelConfig를 주입받도록 변경
-    public Pacman(int xPos, int yPos, LevelConfig levelConfig) { // <-- 변경됨
-        super(32, xPos, yPos, levelConfig.getPacmanSpeed(), "pacman.png", 4, 0.3f); // <-- 변경됨
+    public Pacman(int xPos, int yPos, int spd) { // <-- 변경됨
+        super(32, xPos, yPos, spd, "pacman.png", 4, 0.3f); // <-- 변경됨
         observerCollection = new ArrayList<>(); //팩맨의 "구독자" 목록을 초기화
     }
 
