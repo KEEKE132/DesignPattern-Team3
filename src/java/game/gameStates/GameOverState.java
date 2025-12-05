@@ -33,7 +33,7 @@ public class GameOverState implements GameState {
         // 최종 점수 표시
         g.setColor(Color.YELLOW);
         g.setFont(new Font("Arial", Font.BOLD, 30));
-        String scoreMsg = "Total Score: " + gameplayPanel.getLevelManager().getCurrentScore();
+        String scoreMsg = "Total Score: " + gameplayPanel.getScoreManager().getCurrentScore();
         x = (GameplayPanel.width - g.getFontMetrics().stringWidth(scoreMsg)) / 2;
         g.drawString(scoreMsg, x, y + 80);
 
@@ -59,8 +59,7 @@ public class GameOverState implements GameState {
 
     @Override
     public void onExit() {
-        // Playing으로 진입 전 초기화
-        gameplayPanel.getLevelManager().reset(); // 1. 데이터 초기화
-        GameLauncher.getUIPanel().refreshScore(); // 2. UIPanel 점수판 초기화
+        // Playing으로 진입 전 초기화 (레벨 인덱스 및 점수 초기화)
+        gameplayPanel.resetGame();
     }
 }

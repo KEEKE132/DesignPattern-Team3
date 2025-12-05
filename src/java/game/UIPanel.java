@@ -1,66 +1,98 @@
 package game;
 
-import game.entities.PacGum;
-import game.entities.SuperPacGum;
-import game.entities.ghosts.Ghost;
-import game.entities.items.Item;
-import game.gameconfig.LevelManager;
-import game.ghostStates.FrightenedMode;
+import game.gameconfig.ScoreEvent;
+import game.gameconfig.ScoreManager;
+import game.gameconfig.ScoreObserver;
 
 import javax.swing.*;
 import java.awt.*;
 
 //사용자 인터페이스 패널
-public class UIPanel extends JPanel implements Observer {
+public class UIPanel extends JPanel implements ScoreObserver {
     public static int width;
     public static int height;
-    private final LevelManager levelManager;
+    private final ScoreManager scoreManager;
 
-    // private int score = 0; // <-- 삭제! (이제 점수는 LevelManager가 관리)
     private final JLabel scoreLabel;
+    private final JLabel messageLabel;
+    private Timer messageTimer;
 
     // 생성자가 LevelManager를 주입받도록 변경
-    public UIPanel(int width, int height, LevelManager levelManager) {
+    public UIPanel(int width, int height, ScoreManager scoreManager) {
         UIPanel.width = width;
         UIPanel.height = height;
-        this.levelManager = levelManager;
+        this.scoreManager = scoreManager;
 
         setPreferredSize(new Dimension(width, height)); //자신의 크기를 설정
         this.setBackground(Color.black);
 
-        // 초기 점수 표시
+        this.setLayout(null);
+
+        // 점수 라벨 설정
         scoreLabel = new JLabel("Score: 0");
-        scoreLabel.setFont(scoreLabel.getFont().deriveFont(20.0F));
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         scoreLabel.setForeground(Color.white);
+        scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        scoreLabel.setBounds(0, 20, width, 30);
         this.add(scoreLabel, BorderLayout.WEST); //검은색 패널(UIPanel) 위에 흰색 텍스트 라벨(scoreLabel)을 추가
+
+        // 메시지 라벨 설정
+        messageLabel = new JLabel("");
+        messageLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        messageLabel.setForeground(Color.YELLOW);
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        messageLabel.setBounds(0, 100, width, 30);
+        this.add(messageLabel);
+
+        // 옵저버 등록
+        scoreManager.addObserver(this);
+
+        // 타이머 초기화 (2초 뒤 꺼짐)
+        messageTimer = new Timer(2000, e -> {
+            messageLabel.setText("");
+        });
+        messageTimer.setRepeats(false);
     }
 
     // 점수 갱신 메서드 (이름 변경: updateScore -> refreshScore)
     public void refreshScore() {
-        // LevelManager에서 최신 점수를 가져와서 표시
-        scoreLabel.setText("Score: " + levelManager.getCurrentScore());
-    }
-
-    //인터페이스(UI)는 팩맨이 팩껌, 슈퍼팩껌, 또는 유령과 접촉했을 때 알림을 받으며, 그에 따라 표시되는 점수를 업데이트
-    //팩맨이 팩껌을 먹었다는 알림을 받으면 호출 -> 설정값만큼 추가
-    @Override
-    public void updatePacGumEaten(PacGum pg) {
-        refreshScore();
-    }
-
-    //팩맨이 유령과 충돌했다는 알림을 받으면 호출 -> 설정값만큼 추가
-    @Override
-    public void updateSuperPacGumEaten(SuperPacGum spg) {
-        refreshScore();
-    }
-
-    //팩맨이 팩껌을 먹었다는 알림을 받으면 호출 -> frightened이면, 설정값만큼 추가
-    @Override
-    public void updateGhostCollision(Ghost gh) {
-        // 팩맨이 유령과 접촉한 경우, 유령이 "frightened(겁먹은)" 모드일 때만 점수를 업데이트합니다.
-        if (gh.getState() instanceof FrightenedMode) refreshScore();
+        // ScoreManager에서 최신 점수를 가져와서 표시
+        scoreLabel.setText("Score: " + scoreManager.getCurrentScore());
     }
 
     @Override
-    public void updateItemEaten(Item item) {refreshScore();}
+    public void onScoreChanged(int totalScore,  ScoreEvent event) {
+        // 점수 갱신
+        scoreLabel.setText("Score: " + totalScore);
+
+        // 메시지 처리
+        String msg = event.message();
+        if (msg != null && !msg.isEmpty()) {
+            showMessage(msg);
+        }
+    }
+
+    private void showMessage(String msg) {
+        // 타이머가 돌고 있다면 리셋 (유령 콤보 때 중요!)
+        if (messageTimer.isRunning()) {
+            messageTimer.stop();
+        }
+
+        messageLabel.setText(msg);
+
+        // 메시지 종류별 색상/시간 미세 조정 (선택사항)
+        if (msg.contains("SPEED")) {
+            messageLabel.setForeground(Color.CYAN);
+            messageTimer.setInitialDelay(2000);
+        } else if (msg.contains("MONSTER") || msg.contains("COMBO") || msg.contains("GHOST")) {
+            messageLabel.setForeground(Color.ORANGE);
+            messageTimer.setInitialDelay(1000); // 콤보는 짧게
+        } else {
+            messageLabel.setForeground(Color.YELLOW);
+            messageTimer.setInitialDelay(1500);
+        }
+
+        messageTimer.start();
+        repaint();
+    }
 }

@@ -41,19 +41,16 @@ public class MainMenuState implements GameState {
     @Override
     public void input(KeyHandler k) {
         // 'Enter': 게임 시작
-        if (k.k_enter.isPressedOnce()) {
-            gameplayPanel.setState(new PlayingState(gameplayPanel));
-        }
+        if (k.k_enter.isPressedOnce()) gameplayPanel.setState(new PlayingState(gameplayPanel));
 
         // 'Esc': 게임 종료
-        if (k.k_escape.isPressedOnce()) System.exit(0);
+        if (k.k_escape.isPressedOnce()) gameplayPanel.quitGame();
     }
 
     @Override
     public void onEnter() {
         // MainMenu로 진입 시 초기화
-        gameplayPanel.getLevelManager().reset(); // 1. 데이터 초기화
-        GameLauncher.getUIPanel().refreshScore(); // 2. UIPanel 점수판 초기화
+        gameplayPanel.resetGame();
     }
 
     @Override
