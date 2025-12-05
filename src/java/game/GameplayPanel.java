@@ -60,6 +60,15 @@ public class GameplayPanel extends JPanel implements Runnable {
         return levelManager;
     }
 
+    public void quitGame() {
+        System.exit(0);
+    }
+
+    public void resetGame() {
+        levelManager.reset(); // 1. 데이터 초기화
+        scoreManager.resetScore();
+    }
+
     @Override
     public void addNotify() {
         super.addNotify();
