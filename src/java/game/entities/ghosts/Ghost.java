@@ -315,4 +315,8 @@ public abstract class Ghost extends MovingEntity implements Observer {
         visitor.visit(this);
     }
 
+    protected void setState(GhostState state) {
+        this.state = state;
+    }
+
 }
