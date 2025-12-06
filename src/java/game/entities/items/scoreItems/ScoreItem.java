@@ -19,6 +19,11 @@ public class ScoreItem extends Item {
         game.getScoreManager().addScore(scoreValue, this.eatMessage);
     }
 
+    @Override
+    public boolean isRequiredToClear() {
+        return true;
+    }
+
     public int getScoreValue() {
         return scoreValue;
     }
