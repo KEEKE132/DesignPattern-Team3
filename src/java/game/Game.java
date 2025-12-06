@@ -247,21 +247,8 @@ public class Game implements Observer {
     @Override
     public void updateGhostCollision(Ghost gh) {
         if (gh.getState() instanceof FrightenedMode) {
-            // 콤보 점수 계산
             ghostsEatenCount++;
-            int baseScore = levelManager.getCurrentLevelConfig().getScoreGhostEaten();
-            int comboScore = baseScore * (int) Math.pow(2, ghostsEatenCount - 1);
-
-            // 메세지 조직
-            String msg = "";
-            if (ghostsEatenCount >= 4) {
-                msg = "MONSTER! +" + comboScore;
-            } else if (ghostsEatenCount > 1) {
-                msg = "COMBO! +" + comboScore;
-            } else {
-                msg = "GHOST +" + comboScore;
-            }
-            scoreManager.addScore(comboScore, msg); // 점수 추가
+            scoreManager.notifyGhostEaten(ghostsEatenCount, levelManager.getCurrentLevelConfig().getScoreGhostEaten());
         }else if (!(gh.getState() instanceof EatenMode)) {
             isGameOver = true; // 상태 변경
         }

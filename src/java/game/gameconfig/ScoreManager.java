@@ -32,6 +32,26 @@ public class ScoreManager {
     }
 
     /**
+     * 유령 콤보 로직 구현
+     * 콤보 점수 계산 및 메세지 조직, UI 패널에 점수 변경 사실을 알림
+     */
+    public void notifyGhostEaten(int ghostsEatenCount, int baseScore) {
+        // 콤보 점수 계산
+        int comboScore = baseScore * (int) Math.pow(2, ghostsEatenCount - 1);
+
+        // 메세지 조직
+        String msg = "";
+        if (ghostsEatenCount >= 4) {
+            msg = "MONSTER! +" + comboScore;
+        } else if (ghostsEatenCount > 1) {
+            msg = "COMBO! +" + comboScore;
+        } else {
+            msg = "GHOST +" + comboScore;
+        }
+        this.addScore(comboScore, msg); // 점수 추가
+    }
+
+    /**
      * 현재 총 점수를 반환.
      */
     public int getCurrentScore() {
